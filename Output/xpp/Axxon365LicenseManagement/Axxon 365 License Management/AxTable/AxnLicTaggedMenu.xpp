@@ -1,0 +1,42 @@
+﻿public class AxnLicTaggedMenu extends common
+{
+    public static AxnLicTaggedMenu find(str _formName, str _controlName)
+    {
+        AxnLicTaggedMenu taggedMenuControl;
+        select firstonly taggedMenuControl
+            where taggedMenuControl.MenuName == _formName
+            && taggedMenuControl.MenuType == _controlName;
+
+        return taggedMenuControl;
+    }
+
+    public static void initFromTaggedMenu(List _taggedMenuExtensions)
+    {
+        AxnLicTaggedMenu taggedMenu;
+        RecordInsertList insertList = new RecordInsertList(tableNum(AxnLicTaggedMenu));
+        ListIterator iterator = new ListIterator(_taggedMenuExtensions);
+
+        ttsbegin;
+        delete_from taggedMenu;
+
+        while (iterator.more())
+        {
+            container contValues = iterator.value();
+            str menuName, menuType, tag;
+
+            [menuName, menuType, tag] = contValues;
+
+            taggedMenu.clear();
+            taggedMenu.MenuName = menuName;
+            taggedMenu.MenuType = menuType;
+            taggedMenu.Tag = tag;
+
+            insertList.add(taggedMenu);
+
+            iterator.next();
+        }
+
+        insertList.insertDatabase();
+        ttscommit;
+    }
+}

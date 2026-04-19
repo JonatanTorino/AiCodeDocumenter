@@ -1,0 +1,55 @@
+﻿[Form]
+public class AxnLicCompanyExtensionFeature extends FormRun
+{
+    public void init()
+    {
+        super();
+
+        Args args = element.args();
+        str companyParm = args ? args.parm() : "";
+
+        if (companyParm)
+        {
+            FormDataSource extStaDs = element.datasource("AxnLicSubscriptionExtensionState");
+            QueryBuildDataSource qbds = extStaDs.query().dataSourceTable(extStaDs.table());
+            QueryBuildRange qbr = qbds.addRange(fieldNum(AxnLicSubscriptionExtensionState, CompanyId));
+            qbr.value(SysQuery::value(companyParm));
+
+            extStaDs.research(true);
+        }
+    }
+
+    public boolean validateWrite()
+    {
+        boolean ret = super();
+        AxnLicSubscriptionExtensionState rec = this.cursor();
+
+        if (ret && rec.orig().State != rec.State)
+        {
+            if (Box::yesNo("@AxnLicenseManagement:ConfExtEdit",
+                   DialogButton::No,
+                   "@AxnLicenseManagement:ConfState") == DialogButton::No)
+            {
+                ret = false;
+            }
+        }
+        return ret;
+    }
+
+    public boolean validateWrite()
+    {
+        boolean ret = super();
+        AxnLicSubscriptionExtensionFeatureState rec = this.cursor();
+
+        if (ret && rec.orig().State != rec.State)
+        {
+            if (Box::yesNo("@AxnLicenseManagement:ConfFeatEdir",
+                   DialogButton::No,
+                   "@AxnLicenseManagement:ConfState") == DialogButton::No)
+            {
+                ret = false;
+            }
+        }
+        return ret;
+    }
+}

@@ -1,0 +1,15 @@
+﻿internal final class AxnLicNotificationService
+{
+    public static void addMessage(str _message, MessageSeverity _severity)
+    {
+        Message::Add(_severity, _message);
+    }
+
+    public static void addAction(str _message, str _actionMessage, MessageSeverity _severity, str _menuItemReference)
+    {
+        MenuItemMessageAction actionData = new MenuItemMessageAction();
+        actionData.MenuItemName(_menuItemReference);
+        str jsonData = FormJsonSerializer::serializeClass(actionData);
+        Message::AddAction(_severity, _message, _actionMessage, MessageActionType::DisplayMenuItem, jsonData);
+    }
+}

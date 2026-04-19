@@ -1,0 +1,24 @@
+﻿internal final class AxnLicTimerService implements System.IDisposable
+{
+    private System.Diagnostics.Stopwatch stopWatch;
+    protected void new()
+    {
+        stopwatch = new System.Diagnostics.Stopwatch();
+        stopWatch.Start();
+    }
+
+    public void Dispose()
+    {
+        stopwatch.Stop();
+    }
+
+    public static AxnLicTimerService construct()
+    {
+        return new AxnLicTimerService();
+    }
+
+    public int64 getElapsedTime()
+    {
+        return stopWatch.ElapsedMilliseconds;
+    }
+}

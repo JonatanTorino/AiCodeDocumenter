@@ -1,0 +1,19 @@
+﻿[DataContract]
+internal final class AxnLicSubscriptionResponseDetailContract
+{
+    str extensionId;
+    str extensionName;
+    [DataMemberAttribute('extensionId')]
+    public str parmExtensionId(str _extensionId = extensionId)
+    {
+        extensionId = _extensionId;
+        return extensionId;
+    }
+
+    [DataMemberAttribute('extensionName')]
+    public str parmExtensionName(str _extensionName = extensionName)
+    {
+        extensionName = _extensionName;
+        return extensionName;
+    }
+}

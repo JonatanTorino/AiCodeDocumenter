@@ -1,0 +1,76 @@
+﻿[DataContract]
+internal final class AxnLicSubscriptionResponseContract
+{
+    str           tenantId;
+    int           usersQuantity;
+    str           subscriptionName;
+    utcdatetime   validFrom;
+    utcdatetime   validTo;
+    utcdatetime   finalDate;
+    str           licenseStatus;
+
+    // Array: subscriptionDetails -> List of JT_SubscriptionDetailContract
+    List        subscriptionDetails;
+    public void new()
+    {
+        subscriptionDetails = new List(Types::Class);
+    }
+
+    [DataMemberAttribute('tenantId')]
+    public str parmTenantId(str _tenantId = tenantId)
+    {
+        tenantId = _tenantId;
+        return tenantId;
+    }
+
+    [DataMemberAttribute('usersQuantity')]
+    public int parmUsersQuantity(int _usersQuantity = usersQuantity)
+    {
+        usersQuantity = _usersQuantity;
+        return usersQuantity;
+    }
+
+    [DataMemberAttribute('subscriptionName')]
+    public str parmSubscriptionName(str _subscriptionName = subscriptionName)
+    {
+        subscriptionName = _subscriptionName;
+        return subscriptionName;
+    }
+
+    [DataMemberAttribute('validFrom')]
+    public utcdatetime parmValidFrom(utcdatetime _validFrom = validFrom)
+    {
+        validFrom = _validFrom;
+        return validFrom;
+    }
+
+    [DataMemberAttribute('validTo')]
+    public utcdatetime parmValidTo(utcdatetime _validTo = validTo)
+    {
+        validTo = _validTo;
+        return validTo;
+    }
+
+    [DataMemberAttribute('finalDate')]
+    public utcdatetime parmFinalDate(utcdatetime _finalDate = finalDate)
+    {
+        finalDate = _finalDate;
+        return finalDate;
+    }
+
+    [DataMemberAttribute('licenseStatus')]
+    public str parmLicenseStatus(str _licenseStatus = licenseStatus)
+    {
+        licenseStatus = _licenseStatus;
+        return licenseStatus;
+    }
+
+    // Important: tell the serializer this is a collection of AxnLicSubscriptionResponseDetailContract
+    [DataMemberAttribute('subscriptionDetails'),
+     DataCollectionAttribute(Types::Class, classStr(AxnLicSubscriptionResponseDetailContract))]
+    public List parmSubscriptionDetails(List _subscriptionDetails = subscriptionDetails)
+    {
+        subscriptionDetails = _subscriptionDetails;
+        return subscriptionDetails;
+    }
+}

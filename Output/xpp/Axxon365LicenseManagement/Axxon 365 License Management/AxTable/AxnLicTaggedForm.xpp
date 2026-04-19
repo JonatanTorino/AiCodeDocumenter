@@ -1,0 +1,42 @@
+﻿public class AxnLicTaggedForm extends common
+{
+    public static AxnLicTaggedForm find(FormName _formName)
+    {
+        AxnLicTaggedForm taggedForm;
+        select firstfast taggedForm
+            where taggedForm.FormName == _formName;
+
+        return taggedForm;
+    }
+
+    public static void initFromTaggedForms(List _taggedForms)
+    {
+        AxnLicTaggedForm taggedForm;
+        RecordInsertList insertList = new RecordInsertList(tableNum(AxnLicTaggedForm));
+        ListIterator iterator = new ListIterator(_taggedForms);
+
+        ttsbegin;
+
+        delete_from taggedForm;
+
+        while (iterator.more())
+        {
+            str formName, tag;
+            container contValues = iterator.value();
+
+            [formName, tag] = contValues;
+
+            taggedForm.clear();
+            taggedForm.FormName = formName;
+            taggedForm.Tag = tag;
+
+            insertList.add(taggedForm);
+
+            iterator.next();
+        }
+
+        insertList.insertDatabase();
+
+        ttscommit;
+    }
+}

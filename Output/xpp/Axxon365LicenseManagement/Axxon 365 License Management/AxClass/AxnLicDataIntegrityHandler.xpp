@@ -1,0 +1,23 @@
+﻿internal final class AxnLicDataIntegrityHandler
+{
+    // Handlers para validar integridad al obtener los registros
+    [PostHandlerFor(tableStr(AxnLicSubscription), tableStaticMethodStr(AxnLicSubscription, find))]
+    public static void AxnLicSubscription_Post_find(XppPrePostArgs args)
+    {
+        AxnLicSubscription subscription = args.getReturnValue();
+        if (subscription && !AxnLicDataIntegrityService::validate(subscription))
+        {
+            throw error("@AxnLicenseManagement:ErrorSubscriptionMismatch");
+        }
+    }
+
+    [PostHandlerFor(tableStr(AxnLicSubscriptionPatch), tableStaticMethodStr(AxnLicSubscriptionPatch, find))]
+    public static void AxnLicSubscriptionPatch_Post_find(XppPrePostArgs args)
+    {
+        AxnLicSubscriptionPatch subscription = args.getReturnValue();
+        if (subscription && !AxnLicDataIntegrityService::validate(subscription))
+        {
+            throw error("@AxnLicenseManagement:ErrorSubscriptionMismatch");
+        }
+    }
+}

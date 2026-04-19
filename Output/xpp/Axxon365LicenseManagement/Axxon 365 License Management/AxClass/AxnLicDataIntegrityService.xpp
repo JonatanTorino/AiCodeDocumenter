@@ -1,0 +1,93 @@
+﻿internal final class AxnLicDataIntegrityService
+{
+    /// <summary>
+    /// Calcula el hash de integridad de una suscripción completa.
+    /// </summary>
+    private static str computeHash(Common _sub)
+    {
+        date finalDate = _sub.getFieldValue(fieldStr(AxnLicSubscription, FinalDate));
+        int usersQuantity = _sub.getFieldValue(fieldStr(AxnLicSubscription, UsersQuantity));
+        AxnLicSubscriptionStatus licenseStatus = _sub.getFieldValue(fieldStr(AxnLicSubscription, LicenseStatus));
+
+        // Construimos una cadena estable y determinística
+        str input = strFmt('%1|%2|%3',
+            date2Str(finalDate, 321, DateDay::Digits2, DateSeparator::Hyphen, DateMonth::Digits2, DateSeparator::Hyphen, DateYear::Digits4),
+            usersQuantity,
+            enum2int(licenseStatus)
+        );
+
+        return AxnLicDataIntegrityService::calculateMD5(input);
+    }
+
+    private static str calculateMD5(str _input)
+    {
+        System.Security.Cryptography.MD5 md5 = System.Security.Cryptography.MD5::Create();
+        System.Byte[] inputArray = System.Text.Encoding::get_UTF8().GetBytes(_input);
+        System.Byte[] resultArray = md5.ComputeHash(inputArray);
+        System.Text.StringBuilder sb = new System.Text.StringBuilder();
+
+        for (int i = 0; i < resultArray.get_Length(); i++)
+        {
+            sb.Append(System.String::Format('{0:x2}', resultArray.GetValue(i)));
+        }
+
+        return sb.ToString();
+    }
+
+    /// <summary>
+    /// Guarda (o actualiza) el hash de una suscripción.
+    /// </summary>
+    public static void saveHash(Common _sub)
+    {
+        AxnLicSubscriptionVerification verification = AxnLicSubscriptionVerification::find(_sub.TableId, _sub.RecId, true);
+
+        if (!verification)
+        {
+            verification.RefTableId = _sub.TableId;
+            verification.RefRecId   = _sub.RecId;
+        }
+
+        verification.Hash = AxnLicDataIntegrityService::computeHash(_sub);
+        verification.write();
+    }
+
+    /// <summary>
+    /// Valida que la suscripción no haya sido alterada.
+    /// </summary>
+    public static boolean validate(Common _sub)
+    {
+        AxnLicSubscriptionVerification verification = AxnLicSubscriptionVerification::find(_sub.TableId, _sub.RecId);
+        if (!verification)
+            return checkFailed("@AxnLicenseManagement:ErrorNoSubscription");
+
+        str expected = verification.Hash;
+        str actual   = AxnLicDataIntegrityService::computeHash(_sub);
+
+        boolean ret = expected == actual;
+        if (!ret)
+        {
+            return false;
+        }
+
+        return AxnLicDataIntegrityService::validateUsers(_sub);
+    }
+
+    private static boolean validateUsers(Common _sub)
+    {
+        AxnLicUser user;
+
+        // Contar usuarios habilitados
+        select count(RecId) from user;
+
+        int usersQuantity = _sub.getFieldValue(fieldStr(AxnLicSubscription, UsersQuantity));
+
+        boolean ret = user.RecId <= usersQuantity;
+
+        if (!ret)
+        {
+            return checkFailed("@AxnLicenseManagement:ErrorUsersAltered");
+        }
+
+        return true;
+    }
+}

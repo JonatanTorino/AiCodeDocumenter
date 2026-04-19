@@ -1,0 +1,19 @@
+﻿[DataContract]
+internal final class AxnLicSubscriptionResponseTokenContract
+{
+    str token;
+    str expires;
+    [DataMemberAttribute('token')]
+    public str parmToken(str _token = token)
+    {
+        token = _token;
+        return token;
+    }
+
+    [DataMemberAttribute('expires')]
+    public str parmExpires(str _expires = expires)
+    {
+        expires = _expires;
+        return expires;
+    }
+}
