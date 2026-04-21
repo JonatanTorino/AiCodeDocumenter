@@ -32,10 +32,10 @@ Hoy `AiCodeDocumenter/` es una colección de 7 prompts bien escritos (`Prompts/0
 | Necesidad | Solución | Acción |
 |---|---|---|
 | Generar C4-PlantUML (componentes, contenedores, contexto) | `anthropic-skills:c4-plantuml` (ya instalado localmente) | Invocarlo desde el workflow de componentes |
-| Sintaxis PlantUML para clases y secuencia | `melodic-software/claude-code-plugins@uml-modeling` (51 installs) o `@plantuml-syntax` (127 installs) | Instalar uno vía `npx skills add`; decisión pendiente de evaluación al inicio de M2 |
+| Sintaxis PlantUML para clases, secuencia y C4 | `melodic-software/claude-code-plugins@visualization` (incluye skills `plantuml-syntax`, `diagram-patterns`, `mermaid-syntax` + agents `diagram-generator` y `code-visualizer`) | Declarar vía `extraKnownMarketplaces` + `enabledPlugins` en `.claude/settings.json` del repo (B-prime). Detalle en `M0.2-investigacion-plugin-uml/03-decision.md` |
 | Alternativa a C4 si preferís otra librería | `softaworks/agent-toolkit@c4-architecture` (3.6K installs) | Back-up, no usar de arranque |
 
-Acción al inicio del MVP: instalar `melodic-software/claude-code-plugins@uml-modeling` globalmente y verificar qué expone antes de escribir el workflow de clases/secuencia.
+Acción al inicio de M1: declarar `visualization@melodic-software` en `.claude/settings.json` del repo. Un solo skill cubre los 4 tipos de diagramas que necesita `document-xpp` (clases, secuencia, componentes C4, contenedores C4). Si la calidad del output no alcanza, evaluar migración al par `bitsmuggler/c4-skill` + `SpillwaveSolutions/plantuml` en una iteración posterior.
 
 ---
 
