@@ -1,0 +1,28 @@
+name: Notificaciones al Usuario sobre Estado de Licencia
+slug: notifications
+description: >
+  Emisión de mensajes y alertas en la UI ante eventos de integridad y de estado
+  de suscripción (expiración, inconsistencias, acciones requeridas).
+created_at: 2026-04-21T00:45:00Z
+last_updated: 2026-04-21T00:45:00Z
+status: nueva
+
+classes:
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/AxnLicNotificationHandler.xpp
+    class: AxnLicNotificationHandler
+    role: service
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/AxnLicNotificationService.xpp
+    class: AxnLicNotificationService
+    role: service
+
+inputs_registered:
+  scope: []
+  manuals: []
+  previous_diagrams: []
+
+artifacts:
+  class_diagram: ""
+  sequence_diagrams: []
+  component_diagrams:
+    level_1_node_in: ""
+    level_2: ""

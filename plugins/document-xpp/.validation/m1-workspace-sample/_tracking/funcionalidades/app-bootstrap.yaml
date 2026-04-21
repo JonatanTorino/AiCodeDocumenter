@@ -1,0 +1,37 @@
+name: Bootstrap y Parametrización de la Aplicación
+slug: app-bootstrap
+description: >
+  Arranque del módulo, parámetros globales del sistema y extensiones de
+  FormRun/Global que conectan los componentes en tiempo de ejecución.
+created_at: 2026-04-21T00:45:00Z
+last_updated: 2026-04-21T00:45:00Z
+status: nueva
+
+classes:
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/AxnLicApplicationStartupEventManager.xpp
+    class: AxnLicApplicationStartupEventManager
+    role: service
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/FormRun_Axxon365LicenseManagement_Extension.xpp
+    class: FormRun_Axxon365LicenseManagement_Extension
+    role: other
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/Global_Axxon365LicenseManagement_Extension.xpp
+    class: Global_Axxon365LicenseManagement_Extension
+    role: other
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxForm/AxnLicParameters.xpp
+    class: AxnLicParameters
+    role: controller
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxTable/AxnLicParameters.xpp
+    class: AxnLicParameters
+    role: entity
+
+inputs_registered:
+  scope: []
+  manuals: []
+  previous_diagrams: []
+
+artifacts:
+  class_diagram: ""
+  sequence_diagrams: []
+  component_diagrams:
+    level_1_node_in: ""
+    level_2: ""
