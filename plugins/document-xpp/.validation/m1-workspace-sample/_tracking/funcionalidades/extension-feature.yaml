@@ -1,0 +1,49 @@
+name: Gestión de Extensiones y Features de Producto
+slug: extension-feature
+description: >
+  Activación y verificación de extensiones y features adicionales contratadas
+  por la compañía sobre la licencia base.
+created_at: 2026-04-21T00:45:00Z
+last_updated: 2026-04-21T00:45:00Z
+status: nueva
+
+classes:
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxForm/AxnLicCompanyExtensionFeature.xpp
+    class: AxnLicCompanyExtensionFeature
+    role: controller
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/AxnLicExtensionChecker.xpp
+    class: AxnLicExtensionChecker
+    role: service
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/AxnLicExtensionFeatureDiscoveryService.xpp
+    class: AxnLicExtensionFeatureDiscoveryService
+    role: service
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxClass/AxnLicFeatureChecker.xpp
+    class: AxnLicFeatureChecker
+    role: service
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxTable/AxnLicSubscriptionExtension.xpp
+    class: AxnLicSubscriptionExtension
+    role: entity
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxTable/AxnLicSubscriptionExtensionFeature.xpp
+    class: AxnLicSubscriptionExtensionFeature
+    role: entity
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxTable/AxnLicSubscriptionExtensionFeatureState.xpp
+    class: AxnLicSubscriptionExtensionFeatureState
+    role: entity
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxTable/AxnLicSubscriptionExtensionState.xpp
+    class: AxnLicSubscriptionExtensionState
+    role: entity
+  - file: Axxon365LicenseManagement/Axxon 365 License Management/AxTable/AxnLicSubscriptionExtensionTmp.xpp
+    class: AxnLicSubscriptionExtensionTmp
+    role: entity
+
+inputs_registered:
+  scope: []
+  manuals: []
+  previous_diagrams: []
+
+artifacts:
+  class_diagram: ""
+  sequence_diagrams: []
+  component_diagrams:
+    level_1_node_in: ""
+    level_2: ""

@@ -1,0 +1,9 @@
+[project]
+name = "aicodedocumenter"
+version = "0.0.0"
+description = "Automated technical documentation flow for D365 F&O X++ codebases. Scripts under plugins/document-xpp/ require Python 3.10+."
+requires-python = ">=3.10"
+dependencies = []
+
+[tool.aicodedocumenter]
+python-scripts-root = "plugins/document-xpp/skills/document-xpp/scripts"

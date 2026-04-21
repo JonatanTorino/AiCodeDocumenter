@@ -1,0 +1,13 @@
+# X++ source trees brought in by the user for validation — never commit
+*.xpp
+
+# Local logs
+*.log
+
+# Python (scripts under plugins/document-xpp/ run via `python ...`)
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+venv/
+.pytest_cache/

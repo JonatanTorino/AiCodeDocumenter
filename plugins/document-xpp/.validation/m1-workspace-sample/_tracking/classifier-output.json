@@ -1,0 +1,122 @@
+{
+  "product": "Axxon365LicenseManagement",
+  "mode": "nuevo",
+  "groups": [
+    {
+      "slug": "subscription-lifecycle",
+      "name": "Gestión de Suscripciones y Licencias",
+      "description": "Núcleo del producto: alta, consulta, sincronización y verificación del estado de suscripciones de licencia por compañía y por usuario.",
+      "patterns": ["AxnLicSubscription", "AxnLicUser"],
+      "classes": [
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxForm\\AxnLicCompanySubscriptionExtension.xpp", "class": "AxnLicCompanySubscriptionExtension", "role": "controller", "internal_refs": [], "external_refs": ["DialogButton"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxForm\\AxnLicSubscriptionApply.xpp", "class": "AxnLicSubscriptionApply", "role": "controller", "internal_refs": ["AxnLicParameters", "AxnLicSubscriptionApplyService", "AxnLicSubscriptionRequestContract", "AxnLicSubscriptionService"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionApplyService.xpp", "class": "AxnLicSubscriptionApplyService", "role": "service", "internal_refs": ["AxnLicSubscriptionSync"], "external_refs": ["AxnLicExtensionLicenseStatus", "DialogButton"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionChecker.xpp", "class": "AxnLicSubscriptionChecker", "role": "service", "internal_refs": ["AxnLicSubscription", "AxnLicSubscriptionState", "AxnLicUser"], "external_refs": ["AxnLicState", "AxnLicSubscriptionStatus"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionRequestContract.xpp", "class": "AxnLicSubscriptionRequestContract", "role": "dto", "internal_refs": [], "external_refs": ["ClrInterop", "xSysConfig"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionResponseContract.xpp", "class": "AxnLicSubscriptionResponseContract", "role": "dto", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionResponseDetailContract.xpp", "class": "AxnLicSubscriptionResponseDetailContract", "role": "dto", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionResponseTokenContract.xpp", "class": "AxnLicSubscriptionResponseTokenContract", "role": "dto", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionService.xpp", "class": "AxnLicSubscriptionService", "role": "service", "internal_refs": ["AxnLicHttpAuthProviderApiKey", "AxnLicHttpCallContract", "AxnLicHttpCallService"], "external_refs": ["AxnLicHttpAuthApiKeyAddTo", "AxnLicSubscriptionStatus", "FormJsonSerializer"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicSubscriptionSync.xpp", "class": "AxnLicSubscriptionSync", "role": "service", "internal_refs": [], "external_refs": ["AxnLicState"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscription.xpp", "class": "AxnLicSubscription", "role": "entity", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscriptionState.xpp", "class": "AxnLicSubscriptionState", "role": "entity", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscriptionTmp.xpp", "class": "AxnLicSubscriptionTmp", "role": "entity", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxForm\\AxnLicUser.xpp", "class": "AxnLicUser", "role": "controller", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicUser.xpp", "class": "AxnLicUser", "role": "entity", "internal_refs": [], "external_refs": [] }
+      ]
+    },
+    {
+      "slug": "extension-feature",
+      "name": "Gestión de Extensiones y Features de Producto",
+      "description": "Activación y verificación de extensiones y features adicionales contratadas por la compañía sobre la licencia base.",
+      "patterns": ["AxnLicExtension", "AxnLicFeature", "AxnLicSubscriptionExtension"],
+      "classes": [
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxForm\\AxnLicCompanyExtensionFeature.xpp", "class": "AxnLicCompanyExtensionFeature", "role": "controller", "internal_refs": [], "external_refs": ["Box", "DialogButton", "SysQuery"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicExtensionChecker.xpp", "class": "AxnLicExtensionChecker", "role": "service", "internal_refs": ["AxnLicSubscriptionChecker", "AxnLicSubscriptionExtension", "AxnLicSubscriptionExtensionState"], "external_refs": ["AxnLicExtensionInstallationStatus", "AxnLicExtensionLicenseStatus", "AxnLicState"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicExtensionFeatureDiscoveryService.xpp", "class": "AxnLicExtensionFeatureDiscoveryService", "role": "service", "internal_refs": ["AxnLicConfigurationKeyDiscoveryService", "AxnLicSubscriptionSync"], "external_refs": ["AxnLicExtensionInstallationStatus"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicFeatureChecker.xpp", "class": "AxnLicFeatureChecker", "role": "service", "internal_refs": ["AxnLicExtensionChecker", "AxnLicSubscriptionExtensionFeature", "AxnLicSubscriptionExtensionFeatureState"], "external_refs": ["AxnLicState"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscriptionExtension.xpp", "class": "AxnLicSubscriptionExtension", "role": "entity", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscriptionExtensionFeature.xpp", "class": "AxnLicSubscriptionExtensionFeature", "role": "entity", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscriptionExtensionFeatureState.xpp", "class": "AxnLicSubscriptionExtensionFeatureState", "role": "entity", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscriptionExtensionState.xpp", "class": "AxnLicSubscriptionExtensionState", "role": "entity", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicSubscriptionExtensionTmp.xpp", "class": "AxnLicSubscriptionExtensionTmp", "role": "entity", "internal_refs": [], "external_refs": [] }
+      ]
+    },
+    {
+      "slug": "configuration-discovery",
+      "name": "Descubrimiento y Caché de Configuration Keys",
+      "description": "Resolución en tiempo de ejecución de qué configuration keys están activas para una compañía según su suscripción, con caché en memoria.",
+      "patterns": ["AxnLicConfigurationKey"],
+      "classes": [
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicConfigurationKey.xpp", "class": "AxnLicConfigurationKey", "role": "other", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicConfigurationKeyCache.xpp", "class": "AxnLicConfigurationKeyCache", "role": "other", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicConfigurationKeyDiscoveryService.xpp", "class": "AxnLicConfigurationKeyDiscoveryService", "role": "service", "internal_refs": ["AxnLicConfigurationKey", "AxnLicConfigurationKeyHelper"], "external_refs": ["AxnLicExtensionFeature", "DictConfigurationKey"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicConfigurationKeyHelper.xpp", "class": "AxnLicConfigurationKeyHelper", "role": "helper", "internal_refs": [], "external_refs": ["AxnLicExtensionFeature", "DictConfigurationKey"] }
+      ]
+    },
+    {
+      "slug": "http-integration",
+      "name": "Integración HTTP con Plataforma de Licenciamiento",
+      "description": "Cliente HTTP, autenticación (API key / Bearer) y contrato de llamada remota hacia la plataforma externa que emite y valida las licencias.",
+      "patterns": ["AxnLicHttp", "IAxnLicHttp", "AxnLicTimer"],
+      "classes": [
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicHttpAuthProviderApiKey.xpp", "class": "AxnLicHttpAuthProviderApiKey", "role": "service", "internal_refs": ["IAxnLicHttpAuthProvider"], "external_refs": ["AxnLicHttpAuthApiKeyAddTo"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicHttpAuthProviderBearer.xpp", "class": "AxnLicHttpAuthProviderBearer", "role": "service", "internal_refs": ["IAxnLicHttpAuthProvider"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicHttpCallContract.xpp", "class": "AxnLicHttpCallContract", "role": "dto", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicHttpCallService.xpp", "class": "AxnLicHttpCallService", "role": "service", "internal_refs": ["AxnLicHttpClient"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicHttpClient.xpp", "class": "AxnLicHttpClient", "role": "service", "internal_refs": ["IAxnLicHttpClient"], "external_refs": ["CLRInterop"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicTimerService.xpp", "class": "AxnLicTimerService", "role": "helper", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\IAxnLicHttpAuthProvider.xpp", "class": "IAxnLicHttpAuthProvider", "role": "other", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\IAxnLicHttpClient.xpp", "class": "IAxnLicHttpClient", "role": "other", "internal_refs": [], "external_refs": [] }
+      ]
+    },
+    {
+      "slug": "data-integrity",
+      "name": "Integridad Criptográfica de Datos de Licencia",
+      "description": "Cálculo y verificación de hashes (MD5) sobre los registros de suscripción y extensión para detectar manipulación no autorizada de los datos de licencia.",
+      "patterns": ["AxnLicDataIntegrity"],
+      "classes": [
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicDataIntegrityHandler.xpp", "class": "AxnLicDataIntegrityHandler", "role": "service", "internal_refs": ["AxnLicDataIntegrityServiceExtension", "AxnLicDataIntegrityServiceSubscription"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicDataIntegrityServiceBase.xpp", "class": "AxnLicDataIntegrityServiceBase", "role": "service", "internal_refs": ["AxnLicDataIntegrityTable"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicDataIntegrityServiceExtension.xpp", "class": "AxnLicDataIntegrityServiceExtension", "role": "service", "internal_refs": ["AxnLicDataIntegrityServiceBase"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicDataIntegrityServiceSubscription.xpp", "class": "AxnLicDataIntegrityServiceSubscription", "role": "service", "internal_refs": ["AxnLicDataIntegrityServiceBase"], "external_refs": ["DateDay", "DateMonth", "DateSeparator", "DateYear"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicDataIntegrityTable.xpp", "class": "AxnLicDataIntegrityTable", "role": "entity", "internal_refs": [], "external_refs": [] }
+      ]
+    },
+    {
+      "slug": "notifications",
+      "name": "Notificaciones al Usuario sobre Estado de Licencia",
+      "description": "Emisión de mensajes y alertas en la UI ante eventos de integridad y de estado de suscripción (expiración, inconsistencias, acciones requeridas).",
+      "patterns": ["AxnLicNotification"],
+      "classes": [
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicNotificationHandler.xpp", "class": "AxnLicNotificationHandler", "role": "service", "internal_refs": ["AxnLicDataIntegrityServiceExtension", "AxnLicDataIntegrityServiceSubscription", "AxnLicNotificationService", "AxnLicSubscriptionChecker"], "external_refs": ["AxnLicSubscriptionStatus", "MessageSeverity"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicNotificationService.xpp", "class": "AxnLicNotificationService", "role": "service", "internal_refs": [], "external_refs": ["FormJsonSerializer", "Message", "MessageActionType", "MenuItemMessageAction"] }
+      ]
+    },
+    {
+      "slug": "app-bootstrap",
+      "name": "Bootstrap y Parametrización de la Aplicación",
+      "description": "Arranque del módulo, parámetros globales del sistema y extensiones de FormRun/Global que conectan los componentes en tiempo de ejecución.",
+      "patterns": ["AxnLicApplicationStartup", "AxnLicParameters", "_Extension"],
+      "classes": [
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\AxnLicApplicationStartupEventManager.xpp", "class": "AxnLicApplicationStartupEventManager", "role": "service", "internal_refs": ["AxnLicExtensionFeatureDiscoveryService", "AxnLicParameters"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\FormRun_Axxon365LicenseManagement_Extension.xpp", "class": "FormRun_Axxon365LicenseManagement_Extension", "role": "other", "internal_refs": ["AxnLicNotificationHandler"], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxClass\\Global_Axxon365LicenseManagement_Extension.xpp", "class": "Global_Axxon365LicenseManagement_Extension", "role": "other", "internal_refs": ["AxnLicConfigurationKeyCache", "AxnLicConfigurationKeyHelper", "AxnLicExtensionChecker", "AxnLicFeatureChecker"], "external_refs": ["AxnLicExtensionFeature", "DictConfigurationKey"] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxForm\\AxnLicParameters.xpp", "class": "AxnLicParameters", "role": "controller", "internal_refs": [], "external_refs": [] },
+        { "file": "Axxon365LicenseManagement\\Axxon 365 License Management\\AxTable\\AxnLicParameters.xpp", "class": "AxnLicParameters", "role": "entity", "internal_refs": [], "external_refs": ["Company"] }
+      ]
+    }
+  ],
+  "unclassified": [],
+  "warnings": [
+    "DUPLICADO DE NOMBRE: 'AxnLicUser' y 'AxnLicParameters' existen como AxForm y como AxTable; dependencies.csv no trae 'file', no puede desambiguar automáticamente.",
+    "ROL AMBIGUO — FormRun: 5 clases con parent=FormRun mapeadas a 'controller' por falta de rol 'form' en el contrato.",
+    "ROL AMBIGUO — Interfaces: IAxnLicHttpAuthProvider e IAxnLicHttpClient mapeadas a 'other' por falta de rol 'interface'.",
+    "ROL AMBIGUO — Contracts con lógica: AxnLicSubscriptionRequestContract implementa SysOperationValidatable y tiene 9 métodos; criterio 'Contract→dto' demasiado rígido.",
+    "EXTERNAL_REFS CONTAMINADAS: AxnLicState, AxnLicSubscriptionStatus, AxnLicExtensionFeature y varios Status aparecen como external_refs porque el inventario no incluye AxEnum/AxEdt del propio módulo.",
+    "FALTA EN EXCLUSION-LIST: DictConfigurationKey, SysQuery, Company, xSysConfig, ClrInterop/CLRInterop, Menu/Message/Dialog clases (DialogButton, Box, MenuItemMessageAction, FormJsonSerializer, Message, MessageActionType, MessageSeverity) deberían agregarse.",
+    "GRUPO UNIPERSONAL — AxnLicTimerService: única clase helper transversal; puesta en http-integration por medición de latencia.",
+    "CLASES DE EXTENSIÓN DE FRAMEWORK: FormRun_* y Global_*_Extension no encajan en capacidades de negocio; agrupadas en app-bootstrap con rol 'other'.",
+    "FEEDBACK DE PROMPTS: (1) falta roles 'form' e 'interface' en prompt 02; (2) Contract→dto rígido; (3) Prompt 01 paso 5 desalienta grupos 'técnicos' pero conviven con infra legítima; (4) inventory.csv sin enums/EDTs contamina external_refs; (5) dependencies.csv sin columna 'file' impide desambiguar duplicados."
+  ]
+}
