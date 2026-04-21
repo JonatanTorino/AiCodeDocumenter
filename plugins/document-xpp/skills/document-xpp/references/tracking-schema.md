@@ -54,20 +54,25 @@ Idéntico schema que `hashes.csv`. Es el snapshot anterior, preservado al inicio
 
 ## `_tracking/inventory.csv`
 
-Lista de clases e interfaces encontradas por el parser en el último barrido.
+Lista de clases, interfaces, enums y EDTs encontrados por el parser en el último barrido.
 
-**Generado por:** `scripts/Build-XppInventory.ps1`.
+**Generado por:** `scripts/build_xpp_inventory.py` (Python ≥ 3.10, stdlib).
 
 **Columnas:**
 
 | Columna | Tipo | Descripción |
 |---------|------|-------------|
 | `file` | string | Ruta relativa al `XppSource` con `/`. |
-| `class` | string | Nombre de la clase o interfaz. |
-| `parent` | string | Clase padre (vacío si no hereda, o `Common` para tablas). |
-| `interfaces` | string | Interfaces implementadas, separadas por `;`. |
-| `methods_count` | int | Cantidad total de métodos declarados. |
-| `prefix` | string | Primeros 3 caracteres del nombre de clase (heurística). |
+| `class` | string | Nombre de la clase, interfaz, enum o EDT. |
+| `parent` | string | Clase padre (vacío si no hereda, o `Common` para tablas; vacío para enums/EDTs). |
+| `interfaces` | string | Interfaces implementadas, separadas por `;` (vacío para enums/EDTs). |
+| `methods_count` | int | Cantidad total de métodos declarados (0 para enums/EDTs). |
+| `prefix` | string | Primeros 3 caracteres del nombre (heurística; ignora la `I` inicial de interfaces). |
+| `artifact_kind` | string | `class`, `interface`, `enum` o `edt`. |
+
+**Notas:**
+- Los enums y EDTs se leen desde `AxEnum/*.xml` y `AxEdt/*.xml` (cualquier subcarpeta bajo `SourcePath`), no de `.xpp`. Solo se extrae `<Name>`.
+- El campo `artifact_kind` se agregó en M1.7 — consumidores anteriores que ignoren la última columna siguen siendo compatibles.
 
 ---
 
@@ -75,15 +80,20 @@ Lista de clases e interfaces encontradas por el parser en el último barrido.
 
 Grafo de dependencias inferido del análisis estático.
 
-**Generado por:** `scripts/Build-XppInventory.ps1`.
+**Generado por:** `scripts/build_xpp_inventory.py`.
 
 **Columnas:**
 
 | Columna | Tipo | Descripción |
 |---------|------|-------------|
 | `from_class` | string | Clase que declara la referencia. |
+| `from_file` | string | Ruta relativa al `XppSource` (con `/`) del archivo donde se declara la referencia. |
 | `to_class` | string | Clase referenciada. |
 | `kind` | string | `extends`, `implements`, `uses` (`new X()`) o `calls` (`X::member`). |
+
+**Notas:**
+- `from_file` desambigua clases con mismo nombre pero distinto artefacto (p.ej. `AxnLicParameters` como AxForm y como AxTable emiten filas separadas).
+- Los enums y EDTs no emiten filas aquí — son hojas del grafo.
 
 ---
 

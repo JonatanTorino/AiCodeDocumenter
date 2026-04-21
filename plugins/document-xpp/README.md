@@ -16,7 +16,8 @@ Soporta dos modos: documentación desde cero y actualización incremental con de
 ## Requisitos
 
 - **Claude Code** (CLI, desktop o IDE extension).
-- **PowerShell 7+** (`pwsh`) — los scripts de hashing e inventario son `.ps1`.
+- **PowerShell 7+** (`pwsh`) — script de hashing (`Compute-XppHashes.ps1`).
+- **Python ≥ 3.10** (solo stdlib, sin dependencias externas) — script de inventario (`build_xpp_inventory.py`). Versión mínima declarada en `pyproject.toml` del repo.
 - **Plugin `visualization@melodic-software`** — dependencia declarativa para la sintaxis PlantUML/C4. Se declara en `.claude/settings.json` del repo vía `extraKnownMarketplaces` + `enabledPlugins`.
 
 ## Instalación (desde otro clon del repo)
@@ -55,7 +56,7 @@ plugins/document-xpp/
     prompts/                  # prompts atómicos invocados desde workflows
     references/               # exclusion-list, tracking-schema, visual-conventions
     templates/                # YAML y CSV templates
-    scripts/                  # PowerShell: hashing + parseo X++
+    scripts/                  # PowerShell (hashing) + Python (parser X++, AxEnum/AxEdt)
   agents/
     functional-classifier.md  # Fase 2: agrupa clases por funcionalidad
     diagram-writer.md         # Fases 3–5: genera .puml

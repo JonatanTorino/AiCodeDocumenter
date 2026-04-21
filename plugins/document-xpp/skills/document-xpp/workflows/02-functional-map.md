@@ -8,7 +8,7 @@
 
 ## Paso 1 — Ejecutar scripts de scanner
 
-Corré los dos scripts PowerShell en este orden. Usá la herramienta Bash con `pwsh` (o `powershell` si el sistema no tiene 7+).
+Corré los dos scripts en este orden. El primero es PowerShell; el segundo es Python ≥ 3.10 (declarado en `pyproject.toml` del repo, sin dependencias externas).
 
 ### 1.1 — Hashing
 
@@ -25,14 +25,15 @@ Efecto esperado:
 ### 1.2 — Inventario
 
 ```bash
-pwsh -NoProfile -File "<plugin-root>/skills/document-xpp/scripts/Build-XppInventory.ps1" `
-  -SourcePath "<XppSource>" `
-  -OutputPath "<workspace>/_tracking"
+python "<plugin-root>/skills/document-xpp/scripts/build_xpp_inventory.py" \
+  --source-path "<XppSource>" \
+  --output-path "<workspace>/_tracking"
 ```
 
 Efecto esperado:
-- Crea `<workspace>/_tracking/inventory.csv` con columnas: `file, class, parent, interfaces, methods_count, prefix`.
-- Crea `<workspace>/_tracking/dependencies.csv` con columnas: `from_class, to_class, kind` donde `kind ∈ {extends, implements, uses, calls}`.
+- Crea `<workspace>/_tracking/inventory.csv` con columnas: `file, class, parent, interfaces, methods_count, prefix, artifact_kind` donde `artifact_kind ∈ {class, interface, enum, edt}`.
+- Crea `<workspace>/_tracking/dependencies.csv` con columnas: `from_class, from_file, to_class, kind` donde `kind ∈ {extends, implements, uses, calls}`.
+- Si bajo `<XppSource>` existen carpetas `AxEnum/` o `AxEdt/` (cualquier profundidad), sus `.xml` se leen y los nombres entran al inventory como hojas del grafo (no emiten filas en dependencies).
 
 Si cualquiera de los scripts falla, **detené el flujo** e informá el error al usuario. No intentes reimplementar el parseo vos mismo.
 
@@ -157,7 +158,7 @@ Pivote del flujo. Estructura:
 ...
 ```
 
-Las referencias internas salen de `dependencies.csv` filtrando `to_class` que existen en `inventory.csv`. Las externas son las que NO están en el inventario **y** no aparecen en `references/exclusion-list.md`.
+Las referencias internas salen de `dependencies.csv` filtrando filas cuya `to_class` existe en `inventory.csv` (incluye `class`, `interface`, `enum`, `edt`). Las externas son las que NO están en el inventario **y** no aparecen en `references/exclusion-list.md`. Cuando hay clases duplicadas por artefacto (AxForm + AxTable con el mismo nombre), usá `dependencies.from_file` para desambiguar qué fila corresponde a qué artefacto.
 
 ---
 

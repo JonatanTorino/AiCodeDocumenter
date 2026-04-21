@@ -33,7 +33,8 @@ El flujo completo tiene 5 fases. Cada una vive en `workflows/`:
 
 ## Dependencias del plugin
 
-- **PowerShell** (5.1+ o 7+) — los scripts `scripts/Compute-XppHashes.ps1` y `scripts/Build-XppInventory.ps1` se invocan vía la herramienta Bash.
+- **PowerShell** (5.1+ o 7+) — el script `scripts/Compute-XppHashes.ps1` (MD5 + barrido de `.xpp`) se invoca vía la herramienta Bash.
+- **Python ≥ 3.10** (solo stdlib) — el script `scripts/build_xpp_inventory.py` (parser X++ + metadata AxEnum/AxEdt) se invoca vía la herramienta Bash. Versión mínima declarada en `pyproject.toml` del repo.
 - **Plugin `visualization@melodic-software`** — necesario desde M2 para sintaxis PlantUML y C4. En M1 no se usa todavía.
 
 ## Referencias útiles

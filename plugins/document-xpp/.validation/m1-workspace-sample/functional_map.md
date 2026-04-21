@@ -142,9 +142,14 @@
 
 ## Warnings del run
 
-- Duplicado de nombre `AxnLicUser` y `AxnLicParameters` (AxForm + AxTable) — no puede desambiguarse automáticamente porque `dependencies.csv` no trae la columna `file`.
-- Roles ausentes en el contrato actual: `form` (5 clases), `interface` (2 clases) — mapeadas a `controller` / `other`.
-- `external_refs` contaminadas por enums/EDTs del propio módulo (`AxnLicState`, `AxnLicSubscriptionStatus`, `AxnLicExtensionFeature`, `AxnLicHttpAuthApiKeyAddTo`, …) — el parser no procesa `AxEnum` ni `AxEdt`.
+### Resueltos en M1.7 (migración PS → Python)
+
+- ✅ **Path separator** — `inventory.csv` y `dependencies.csv` ahora usan `/` consistente con `hashes.csv` y con el schema.
+- ✅ **Desambiguación AxForm + AxTable** — `dependencies.csv` ahora incluye la columna `from_file`, separando las filas de `AxnLicUser` / `AxnLicParameters` por artefacto.
+- ✅ **Soporte AxEnum / AxEdt** — el parser lee `AxEnum/*.xml` y `AxEdt/*.xml` bajo `SourcePath` y agrega las filas correspondientes al `inventory.csv` con `artifact_kind ∈ {enum, edt}`. En este run el módulo local no provee las carpetas, por eso los enums del propio módulo siguen apareciendo como `external_refs` hasta que el consumidor incluya esos metadatos.
+
+### Backlog (no bloqueantes para M2, se ajustan cuando se lleguen)
+
+- Roles ausentes en el contrato actual del classifier: `form` (5 clases), `interface` (2 clases) — hoy se mapean forzadamente a `controller` / `other`.
 - Gaps en `exclusion-list.md`: `DictConfigurationKey`, `SysQuery`, `Company`, `xSysConfig`, `ClrInterop`, `CLRInterop`, `DialogButton`, `Box`, `MessageSeverity`, `MessageActionType`, `MenuItemMessageAction`, `Message`, `FormJsonSerializer`, `DateDay`, `DateMonth`, `DateSeparator`, `DateYear`.
 - Criterio `Contract → dto` rígido — `AxnLicSubscriptionRequestContract` tiene 9 métodos y valida, más cerca de un service.
-- Path separator inconsistente: `hashes.csv` usa `/` pero `inventory.csv`/`dependencies.csv` usan `\` — romper con el schema documentado (schema dice `/`).

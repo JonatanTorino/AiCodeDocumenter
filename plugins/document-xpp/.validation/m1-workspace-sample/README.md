@@ -30,14 +30,16 @@ Golden output de la validación end-to-end del milestone **M1** del plugin `docu
 
 Desde el root del repo, con el plugin instalado:
 
-```powershell
+```bash
+# Hashing (PowerShell 7+)
 pwsh -NoProfile -File plugins/document-xpp/skills/document-xpp/scripts/Compute-XppHashes.ps1 `
   -SourcePath "C:/Repos/AxxonPractica/AxxonPracticaDev/AiCodeDocumenter/XppSource" `
-  -OutputPath "plugins/document-xpp/.validation/m1-workspace-sample/_tracking/hashes.csv"
+  -OutputPath "plugins/document-xpp/.validation/m1-workspace-sample/_tracking"
 
-pwsh -NoProfile -File plugins/document-xpp/skills/document-xpp/scripts/Build-XppInventory.ps1 `
-  -SourcePath "C:/Repos/AxxonPractica/AxxonPracticaDev/AiCodeDocumenter/XppSource" `
-  -OutputRoot "plugins/document-xpp/.validation/m1-workspace-sample/_tracking"
+# Inventario + dependencias (Python ≥ 3.10, solo stdlib)
+python plugins/document-xpp/skills/document-xpp/scripts/build_xpp_inventory.py \
+  --source-path "XppSource" \
+  --output-path "plugins/document-xpp/.validation/m1-workspace-sample/_tracking"
 ```
 
 Luego disparar el skill `document-xpp` en modo `nuevo` sobre este workspace y comparar contra los artefactos commiteados.
