@@ -1,0 +1,14 @@
+{
+  "extraKnownMarketplaces": {
+    "melodic-software": {
+      "source": {
+        "type": "github",
+        "repo": "melodic-software/claude-code-plugins"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "visualization@melodic-software": true,
+    "document-xpp@aicodedocumenter-local": true
+  }
+}
