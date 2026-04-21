@@ -41,7 +41,7 @@ El flujo completo tiene 5 fases. Cada una vive en `workflows/`:
 
 - `references/exclusion-list.md` — clases estándar de D365/X++ que el classifier debe ignorar como ruido técnico.
 - `references/tracking-schema.md` — schema de los archivos YAML y CSV del workspace.
-- `references/visual-conventions.md` — convenciones de estilo para los diagramas (M2+).
+- `references/visual-conventions.md` — convenciones de estilo para los diagramas PlantUML: paleta por rol, estereotipos, catálogo de verbos semánticos, leyenda. Aplica desde M2.
 
 ## Qué NO hacer
 
