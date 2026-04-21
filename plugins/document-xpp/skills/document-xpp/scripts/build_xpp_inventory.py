@@ -43,6 +43,13 @@ import xml.etree.ElementTree as ET
 from pathlib import Path
 from typing import Iterable
 
+if sys.version_info < (3, 10):
+    sys.exit(
+        f"build_xpp_inventory.py requires Python >= 3.10 "
+        f"(pyproject.toml declares `requires-python = \">=3.10\"`); "
+        f"running on {sys.version.split()[0]}."
+    )
+
 MODIFIERS = (
     "public|private|internal|protected|final|abstract|static|sealed|"
     "hookable|replaceable|client|server|display|edit"
