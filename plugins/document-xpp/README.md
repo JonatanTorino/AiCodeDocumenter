@@ -39,8 +39,8 @@ Verificá que `/document-xpp` aparezca en el autocomplete.
 
 El skill pide:
 
-- Ubicación de la carpeta `XppSource/` con los archivos `.xpp`.
-- Directorio del workspace de documentación (dónde caerán los entregables).
+- Ubicación de la carpeta `XppSource/**/[Modelo]` con los archivos `.xpp`. (Se espera el 'modelo', no el módulo contenedor de modelos por limitaciónes de la ventana de contexto)
+- Directorio del workspace de documentación (dónde crear los entregables).
 - Tipo de sesión: `nuevo`, `actualizar`, `agregar-independiente`, `agregar-relacionado`.
 
 El resto es conversacional — el skill orquesta los workflows por fase y pregunta cuando necesita decisiones humanas.
