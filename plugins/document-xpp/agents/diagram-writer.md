@@ -84,7 +84,7 @@ Devolvé **sólo** un bloque JSON dentro de ``` ```json ... ``` ```, nada más:
 ### Reglas del contrato
 
 - **`puml_path`** — coincide con `puml_output_path` que te pasó el orquestador. Ya debés haber escrito el archivo a disco antes de devolver este JSON.
-- **`nodes_rendered`** — clases que aparecen en el `.puml` (incluye `<<External>>` efectivamente dibujadas).
+- **`nodes_rendered`** — **sólo** clases del grupo (`nodes[]` del candidate) efectivamente dibujadas en el `.puml`. Los externals se contabilizan aparte en `external_rendered`. La separación existe para que el check del prompt `nodes_rendered + |omitted_nodes| == |candidate.nodes|` cierre matemáticamente.
 - **`new_verbs[]`** — cada verbo usado fuera del catálogo de `visual-conventions.md` debe aparecer acá con `from`, `to` y `justification`. Además, debe generar una entrada en `warnings[]` con el formato obligatorio:
   `verbo '<nuevo>' usado en <A> → <B>; no pertenece al catálogo actual`.
 - **`omitted_nodes[]`** — cualquier clase de `nodes[]` que NO renderizaste. Siempre con `reason`. Si omitiste un nodo sin justificación, el workflow lo trata como error y te re-invoca.

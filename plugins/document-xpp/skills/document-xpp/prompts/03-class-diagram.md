@@ -113,7 +113,7 @@ Escribí el contenido generado a `puml_output_path` con `Write`. **No retornés 
 ### Paso 9 — Armar el JSON de respuesta
 
 Siguiendo exactamente el contrato de `agents/diagram-writer.md`. Antes de devolverlo:
-- Verificá que `nodes_rendered + |omitted_nodes|` == `|nodes[]|` del candidate.
+- Verificá que `nodes_rendered + |omitted_nodes|` == `|nodes[]|` del candidate. Recordá: `nodes_rendered` cuenta SÓLO clases del grupo; los externals dibujados van aparte en `external_rendered` (el agent contract lo define así explícitamente).
 - Verificá que cada elemento de `new_verbs[]` tenga su entrada gemela en `warnings[]`.
 - Verificá que `puml_path` matchee `puml_output_path` que te pasaron.
 
