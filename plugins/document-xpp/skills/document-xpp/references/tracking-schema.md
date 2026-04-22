@@ -149,7 +149,7 @@ artifacts:
 
 ## `_tracking/diagram_candidates/<slug>.yaml`
 
-**Un archivo por funcionalidad, generado por el script de Fase 3.** Es un artefacto **determinístico e intermedio** — no se edita a mano, se regenera. El agente `diagram-writer` lo consume como único input estructurado; para decidir cómo dibujar cada nodo/relación va a los `.xpp` y al DBML referenciados acá.
+**Un archivo por funcionalidad, generado por el script de Fase 3.** Es un artefacto **determinístico e intermedio** — no se edita a mano, se regenera. El agente `uml-diagram-writer` lo consume como único input estructurado; para decidir cómo dibujar cada nodo/relación va a los `.xpp` y al DBML referenciados acá.
 
 **Generado por:** `scripts/build_class_diagrams.py` (Python ≥ 3.10, requiere **PyYAML ≥ 6.0** — declarado en `pyproject.toml`).
 

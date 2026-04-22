@@ -2,7 +2,7 @@
 
 Reglas de estilo para que los diagramas PlantUML generados por el plugin (M2+) sean **consistentes entre corridas**, **legibles al primer vistazo** y **útiles como documentación viva**.
 
-El agente `diagram-writer` (M2+) consume este archivo como contrato. Las reglas marcadas **obligatorio** son output-gating; las **recomendado** son defaults que se pueden overridear si queda justificado.
+El agente `uml-diagram-writer` (M2+) consume este archivo como contrato. Las reglas marcadas **obligatorio** son output-gating; las **recomendado** son defaults que se pueden overridear si queda justificado.
 
 ---
 
@@ -209,7 +209,7 @@ end legend
 
 ## Template base
 
-Skeleton que el agente `diagram-writer` (M2+) rellena. Mantener los bloques en este orden.
+Skeleton que el agente `uml-diagram-writer` (M2+) rellena. Mantener los bloques en este orden.
 
 ```plantuml
 @startuml <slug>
@@ -296,4 +296,4 @@ Si durante M2+ surge la necesidad de:
 - Un nuevo **verbo** → agregarlo al catálogo con su semántica en una fila.
 - Un **cambio de color** → PR con captura antes/después y justificación (accesibilidad, contraste, daltonismo).
 
-**No driftear** en diagramas individuales: si el agente detecta necesidad de algo no documentado, lo escala como `warnings[]` en el output JSON del contrato del classifier / diagram-writer.
+**No driftear** en diagramas individuales: si el agente detecta necesidad de algo no documentado, lo escala como `warnings[]` en el output JSON del contrato del classifier / uml-diagram-writer.

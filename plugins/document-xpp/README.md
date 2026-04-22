@@ -59,15 +59,16 @@ plugins/document-xpp/
     scripts/                  # PowerShell (hashing) + Python (parser X++, AxEnum/AxEdt)
   agents/
     functional-classifier.md  # Fase 2: agrupa clases por funcionalidad
-    diagram-writer.md         # Fases 3–5: genera .puml
+    uml-diagram-writer.md     # Fase 3: genera .puml de clases UML
+    c4-component-writer.md    # Fase 5: genera .puml de componentes C4
 ```
 
 ## Estado
 
 - **M0** — investigación y prototipos (cerrado).
 - **M1** — `nuevo` + detección de workspace existente con diff de hashes (en curso).
-- **M2** — diagramas de clases.
-- **M3** — diagramas de componentes C4.
+- **M2** — diagramas de clases (cerrado).
+- **M3** — diagramas de componentes C4 (en curso).
 - **M4** — diagramas de secuencia interactivos.
 - **M5** — modos `actualizar` / `agregar-*` completos.
 
