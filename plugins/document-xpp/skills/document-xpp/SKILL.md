@@ -19,23 +19,24 @@ El flujo completo tiene 5 fases. Cada una vive en `workflows/`:
 |---|----------|----------|--------|
 | 1 | `workflows/01-bootstrap.md` | Recolecta inputs obligatorios + detecta tipo de sesión + prepara estructura del workspace | Siempre al inicio |
 | 2 | `workflows/02-functional-map.md` | Corre scripts de hashing + inventario, delega al agente `functional-classifier`, persiste `functional_map.md` y los YAML de tracking | Siempre después de 1 |
-| 3 | `workflows/03-class-diagrams.md` | Diagramas de clases por grupo funcional | M2 — no disponible en M1 |
-| 4 | `workflows/04-sequence-diagrams.md` | Diagramas de secuencia interactivos | M4 — no disponible en M1 |
-| 5 | `workflows/05-component-diagrams.md` | Diagramas C4 nivel 1 y 2 | M3 — no disponible en M1 |
+| 3 | `workflows/03-class-diagrams.md` | Corre `build_class_diagrams.py` para emitir candidatos deterministas, delega al agente `diagram-writer`, persiste un `.puml` por grupo | Siempre después de 2 si el usuario quiere diagramas de clases |
+| 4 | `workflows/04-sequence-diagrams.md` | Diagramas de secuencia interactivos | M4 — no disponible todavía |
+| 5 | `workflows/05-component-diagrams.md` | Diagramas C4 nivel 1 y 2 | M3 — no disponible todavía |
 
-**Estado actual (M1):** sólo Fases 1 y 2 están implementadas. Si el usuario pide Fases 3–5, avisale que están planificadas pero no disponibles todavía, y ofrecé correr Fases 1 y 2 como base.
+**Estado actual (M2):** Fases 1, 2 y 3 implementadas. Si el usuario pide Fases 4 o 5, avisale que están planificadas pero no disponibles todavía, y ofrecé correr Fases 1–3 como base.
 
 ## Cómo ejecutar
 
 1. Leé `workflows/01-bootstrap.md` y seguilo **al pie de la letra**. No avances a Fase 2 hasta que bootstrap termine sin bloqueos.
 2. Leé `workflows/02-functional-map.md` y seguilo. Al final tenés el mapa funcional y el tracking persistido.
-3. Avisá al usuario que M1 cerró y que las Fases 3–5 serán habilitadas en próximos milestones.
+3. Si el usuario pidió diagramas de clases (o lo decidiste como paso natural del flujo), leé `workflows/03-class-diagrams.md` y seguilo. Requiere DBML — si el manifest no lo tiene, el workflow lo reclama antes de avanzar.
+4. Avisá al usuario que M2 cerró y que las Fases 4 y 5 serán habilitadas en próximos milestones.
 
 ## Dependencias del plugin
 
 - **PowerShell** (5.1+ o 7+) — el script `scripts/Compute-XppHashes.ps1` (MD5 + barrido de `.xpp`) se invoca vía la herramienta Bash.
-- **Python ≥ 3.10** (solo stdlib) — el script `scripts/build_xpp_inventory.py` (parser X++ + metadata AxEnum/AxEdt) se invoca vía la herramienta Bash. Versión mínima declarada en `pyproject.toml` del repo.
-- **Plugin `visualization@melodic-software`** — necesario desde M2 para sintaxis PlantUML y C4. En M1 no se usa todavía.
+- **Python ≥ 3.10** — `scripts/build_xpp_inventory.py` es stdlib-only (M1). `scripts/build_class_diagrams.py` (M2) requiere **PyYAML ≥ 6.0**, declarado en `pyproject.toml` del repo. Instalación: `pip install -e .` desde la raíz del repo.
+- **Plugin `visualization@melodic-software`** — habilitado desde M2 para render de PlantUML. Lo usa el usuario al abrir los `.puml` generados por Fase 3.
 
 ## Referencias útiles
 

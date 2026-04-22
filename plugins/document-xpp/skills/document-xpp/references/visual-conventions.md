@@ -11,7 +11,7 @@ El agente `diagram-writer` (M2+) consume este archivo como contrato. Las reglas 
 1. **El diagrama cuenta el dominio, no el encapsulamiento.** Si alguien quiere saber la visibilidad de un método, lee el código. El diagrama responde *"¿cómo se organiza este pedazo del sistema?"*
 2. **Un diagrama = una funcionalidad.** Cada grupo del `functional_map.md` produce un `.puml`. Si la complejidad rompe 15 clases, se divide en sub-views.
 3. **Leyenda siempre visible.** Un diagrama sin leyenda no es autodocumentable.
-4. **Vocabulario cerrado en las relaciones.** Los verbos salen del catálogo — sin improvisación por diagrama.
+4. **Vocabulario curado en las relaciones.** El catálogo es el punto de partida y la primera opción; si ningún verbo encaja, el agente propone uno nuevo en el diagrama y lo deja registrado en su `warnings[]` para que el catálogo crezca de forma consciente.
 
 ---
 
@@ -99,7 +99,13 @@ class AxnLicSubscriptionService <<Service>> {
 
 ## Verbos semánticos para relaciones
 
-**Catálogo cerrado.** Cada relación lleva un verbo del catálogo como label — nada de prosa libre.
+**Catálogo abierto, curado.** El set de verbos de esta sección es el punto de partida y la primera elección. Si ningún verbo captura la relación con precisión, el agente **puede introducir un verbo nuevo** en el diagrama siempre que:
+
+1. Sea un verbo corto en infinitivo (presente indicativo también aceptable) — coherente con el estilo del catálogo.
+2. Quede anotado en el campo `warnings[]` del output del agente, con la forma `verbo '<nuevo>' usado en <A> → <B>; no pertenece al catálogo actual`.
+3. No duplique semántica de un verbo ya existente (si calza con `usa`, usá `usa` — la extensión es para lo que REALMENTE falta).
+
+El catálogo crece por consolidación: verbos nuevos que aparecen en múltiples diagramas se promueven a esta tabla en un PR explícito.
 
 | Verbo | Semántica | Uso típico |
 |---|---|---|
@@ -119,9 +125,7 @@ class AxnLicSubscriptionService <<Service>> {
 | `extiende` | herencia — **sin label**, la flecha `--\|>` es autodescriptiva | — |
 | `implementa` | realización — **sin label**, la flecha `..\|>` es autodescriptiva | — |
 
-**Obligatorio:** todas las asociaciones (`-->`, `..>`) llevan un verbo del catálogo como label.
-
-**Añadir verbos al catálogo:** si detectás una relación que no encaja, proponelo como extensión del catálogo (PR a este archivo) — no inventes en el diagrama.
+**Obligatorio:** todas las asociaciones (`-->`, `..>`) llevan un verbo como label — del catálogo o, si ninguno encaja, uno nuevo registrado en `warnings[]` según las reglas de arriba. Prosa libre sin registrar = diagrama rechazado.
 
 ---
 
@@ -280,7 +284,7 @@ Este archivo se derivó de `PlantUML-sample-license-services.wsd` (raíz del rep
 | Tipos en signaturas | Primitivos incluidos | Primitivos omitidos |
 | `<<External>>` | Ausente | Obligatorio para out-of-domain |
 | Leyenda | Ausente | Obligatoria |
-| Catálogo de verbos | Libre (ad-hoc por diagrama) | Cerrado |
+| Catálogo de verbos | Libre (ad-hoc por diagrama) | Abierto pero curado — extensible con registro en `warnings[]` |
 | Tamaño del diagrama | Sin criterio | Target 5–15 clases |
 
 ---

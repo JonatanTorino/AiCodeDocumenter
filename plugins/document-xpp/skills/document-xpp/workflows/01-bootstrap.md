@@ -32,9 +32,11 @@ Preguntá (una sola vez, con `AskUserQuestion`) si el usuario quiere aportar alg
 
 - **Documentos de alcance** (paths a archivos Markdown o texto plano). **No se copian** — se registran por path en el YAML de la funcionalidad correspondiente bajo `inputs_registered.scope`.
 - **Manuales de usuario** (paths a archivos Markdown o texto plano). **No se copian** — se registran bajo `inputs_registered.manuals`.
-- **DBML del modelo de datos** (path a un `.dbml`). Si el usuario aporta:
+- **DBML del modelo de datos** (path a un `.dbml` en formato `dbdiagram.io`). Recomendado: aportalo acá aunque todavía estés en M1 — la Fase 3 (diagramas de clases, M2+) lo va a requerir y pedirlo ahora evita fricción después. Si el usuario aporta:
   - Si ya hay un `.dbml` en `<workspace>/dbml/`, preguntá si sobrescribe o mantiene el existente.
-  - Si no hay, **copiá** el archivo a `<workspace>/dbml/`.
+  - Si no hay, **copiá** el archivo a `<workspace>/dbml/` preservando el nombre original.
+  - Registrá la ruta relativa resultante (`dbml/<filename>`) — se escribe en `manifest.yaml` bajo `sources.dbml_path` en el Paso 4.
+  - Si no aporta, `sources.dbml_path` queda vacío y se pedirá al iniciar Fase 3.
 - **Diagramas de clases previos** (paths a `.puml` o `.png`). Si el usuario aporta:
   - **Copiá** cada uno a `<workspace>/adicionales/clases-previas/`.
   - Creá o actualizá `<workspace>/adicionales/README.md` con el disclaimer: *"Insumos de apoyo aportados por el usuario. Pueden estar desactualizados respecto al código vigente; úsese con criterio."*
@@ -73,11 +75,12 @@ created_at: <ISO-8601 UTC>
 last_session_at: <ISO-8601 UTC>
 sources:
   xpp_root: <path absoluto a XppSource>
+  dbml_path: <ruta relativa al workspace, o "" si no se aportó>
 plugin_version: 0.1.0
 ```
 
-- En modo `nuevo`: creá el archivo con `created_at` = ahora.
-- En otros modos: leé el existente y actualizá `last_session_at` = ahora. **No modifiques** `created_at`.
+- En modo `nuevo`: creá el archivo con `created_at` = ahora. Escribí `sources.dbml_path` con la ruta registrada en el Paso 2 (o `""` si no se aportó).
+- En otros modos: leé el existente y actualizá `last_session_at` = ahora. **No modifiques** `created_at`. Si en esta sesión se aportó un DBML nuevo (o se sobrescribió uno previo), actualizá `sources.dbml_path` en consecuencia.
 
 ---
 
@@ -88,7 +91,7 @@ Imprimí un resumen breve y confirmalo antes de pasar a Fase 2:
 - Modo de sesión.
 - Path `XppSource`.
 - Path del workspace.
-- Inputs opcionales registrados (o *"ninguno"*).
+- Inputs opcionales registrados (o *"ninguno"*). Indicá explícitamente si `sources.dbml_path` quedó vacío — en ese caso avisá que Fase 3 lo va a pedir.
 - Próxima fase: **02 — Mapa funcional**.
 
 ---
