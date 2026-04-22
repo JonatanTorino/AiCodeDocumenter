@@ -99,8 +99,12 @@ Tomá el `template_path` y completá los bloques en este orden:
 
 1. **`@startuml <slug>`** + `title <name>` del grupo.
 2. **`skinparam class { ... }`** completo del template (no recortés la paleta aunque no uses todos los roles — es barato y deja el archivo uniforme entre grupos).
-3. **Clases del grupo**: una por una, con estereotipo y members filtrados (Paso 2 y 3). Agrupá con `package` si hay > 10 nodos y un sub-clustering claro (Tables, Contracts, Http, etc).
-4. **Externals**: al final del bloque de clases, siempre.
+3. **Nodos del grupo**: uno por uno, con estereotipo y members filtrados (Paso 2 y 3). El template expone un placeholder `keyword` que resuelve por `artifact_kind`:
+   - `artifact_kind == interface` → `keyword = "interface"` (usa el shape nativo de interface de PlantUML).
+   - `artifact_kind == enum` → `keyword = "enum"` (dormant en M2; incluido para futura activación).
+   - resto (`class`, `table`, `view`) → `keyword = "class"` (el color lo pone el stereotype).
+   Agrupá con `package` si hay > 10 nodos y un sub-clustering claro (Tables, Contracts, Http, etc).
+4. **Externals**: al final del bloque de clases, siempre. Mismo criterio de `keyword`: un external que es interface se emite como `interface Foo <<External>>`; el resto, `class Foo <<External>>`.
 5. **Relaciones**: agrupadas visualmente — primero herencias/implementaciones, después asociaciones, después composiciones/agregaciones.
 6. **Notas** (máximo 2): entry point + asimetría no obvia.
 7. **Legend right** con SÓLO los roles presentes.

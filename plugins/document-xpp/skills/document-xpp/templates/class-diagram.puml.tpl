@@ -32,10 +32,14 @@ skinparam enum {
 top to bottom direction
 
 ' --------------------------------------------------------------------
-' Clases del grupo
+' Nodos del grupo
+' `keyword` = `class` | `interface` | `enum`.
+'   - interfaces (`artifact_kind == interface`) → `interface Foo` + shape nativo PlantUML.
+'   - enums (`artifact_kind == enum`) → `enum Foo` con la paleta de `skinparam enum`.
+'   - tables / views / class normales → `class Foo` + stereotype que define el color.
 ' --------------------------------------------------------------------
 {{#nodes}}
-class {{class}} <<{{stereotype}}>> {
+{{keyword}} {{class}} <<{{stereotype}}>> {
 {{#members}}
   {{.}}
 {{/members}}
@@ -44,9 +48,11 @@ class {{class}} <<{{stereotype}}>> {
 
 ' --------------------------------------------------------------------
 ' Clases externas referenciadas (si las hay)
+' `keyword` idem arriba — para un external interface el agente emite
+' `interface Foo <<External>>` (sin members, sólo la caja).
 ' --------------------------------------------------------------------
 {{#externals}}
-class {{class}} <<{{stereotype}}>>
+{{keyword}} {{class}} <<{{stereotype}}>>
 {{/externals}}
 
 ' --------------------------------------------------------------------
