@@ -11,3 +11,6 @@ __pycache__/
 .venv/
 venv/
 .pytest_cache/
+
+# Ephemeral validation workspaces and samples (local-only; not a regression baseline)
+.validation/
