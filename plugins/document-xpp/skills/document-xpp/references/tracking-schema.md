@@ -14,6 +14,7 @@ created_at: 2026-04-20T14:30:00Z        # ISO-8601 UTC — timestamp de la prime
 last_session_at: 2026-04-20T14:30:00Z   # ISO-8601 UTC — timestamp de la última ejecución del skill
 sources:
   xpp_root: D:/src/License/XppSource    # path absoluto al XppSource usado en la última sesión
+  dbml_path: dbml/license-schema.dbml   # string — ruta RELATIVA al workspace; "" si el user no aportó DBML
 plugin_version: 0.1.0                    # version del plugin document-xpp que generó esta sesión
 ```
 
@@ -21,6 +22,8 @@ plugin_version: 0.1.0                    # version del plugin document-xpp que g
 - `created_at` NUNCA cambia después de la sesión inicial.
 - `last_session_at` se actualiza en cada ejecución del skill.
 - Si `workspace_version` del manifest no matchea con el esperado por el plugin instalado, el skill debe detectarlo y pedir migración antes de avanzar.
+- `sources.xpp_root` es path **absoluto** (fuera del workspace). `sources.dbml_path` es **relativo** al workspace (el `.dbml` se copia adentro en Fase 1).
+- `sources.dbml_path` vacío significa "el usuario no aportó DBML al hacer bootstrap". La Fase 3 (diagramas de clases) lo requiere y pedirá el archivo al iniciar si falta; al copiarlo, actualiza el manifest en ese momento.
 
 ---
 
