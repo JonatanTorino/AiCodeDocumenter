@@ -99,7 +99,12 @@ def detect_artifact_kind(file_rel: str, inventory_kind: str) -> str:
 
 
 def build_class_to_group(func_dir: Path) -> dict[str, str]:
-    """Return {class_name: slug} across every funcionalidad YAML."""
+    """Return {class_name: slug} across every funcionalidad YAML.
+
+    For ambiguous class names (same name across multiple artifact kinds,
+    e.g. AxForm + AxTable) the first occurrence wins. Externals only use
+    this as a boolean hint for `in_inventory` + a best-effort slug.
+    """
     mapping: dict[str, str] = {}
     for yaml_file in sorted(func_dir.glob("*.yaml")):
         data = yaml.safe_load(yaml_file.read_text(encoding="utf-8"))
@@ -108,30 +113,45 @@ def build_class_to_group(func_dir: Path) -> dict[str, str]:
         slug = data.get("slug") or yaml_file.stem
         for c in data.get("classes") or []:
             if isinstance(c, dict) and c.get("class"):
-                mapping[c["class"]] = slug
+                mapping.setdefault(c["class"], slug)
     return mapping
 
 
 def build_candidate(
     funcionalidad: dict,
-    inventory_by_class: dict[str, dict],
+    inventory_by_key: dict[tuple[str, str], dict],
+    inventory_classes: set[str],
     dependencies: list[dict],
     class_to_group: dict[str, str],
     exclusion_lower: set[str],
     manifest_sources: dict,
 ) -> dict:
     slug = funcionalidad["slug"]
-    group_classes = [c["class"] for c in funcionalidad.get("classes") or []]
-    group_set = set(group_classes)
+
+    # Group identity is the (class, file) pair — NOT just class name.
+    # tracking-schema.md says the same class name may appear multiple
+    # times in inventory.csv and dependencies.csv (AxForm + AxTable,
+    # etc), disambiguated by file/from_file. Collapsing by name would
+    # point nodes[].file to the wrong .xpp or drop edges from the
+    # sibling artifact.
+    group_keys: set[tuple[str, str]] = set()
+    group_class_names: set[str] = set()
+    for c in funcionalidad.get("classes") or []:
+        if isinstance(c, dict) and c.get("class") and c.get("file"):
+            group_keys.add((c["class"], c["file"]))
+            group_class_names.add(c["class"])
 
     nodes: list[dict] = []
     for c in funcionalidad.get("classes") or []:
-        class_name = c["class"]
-        inv = inventory_by_class.get(class_name)
+        class_name = c.get("class")
+        file_rel = c.get("file")
+        if not class_name or not file_rel:
+            continue
+        inv = inventory_by_key.get((class_name, file_rel))
         if inv is None:
-            # Class declared in funcionalidad but not in current inventory.
-            # Likely renamed/deleted since classification — skip, the
-            # workflow should surface this on reruns.
+            # Entry declared in funcionalidad but not in current inventory
+            # under that exact file. Likely renamed/deleted/moved since
+            # classification — skip; the workflow surfaces this on reruns.
             continue
         interfaces_raw = (inv.get("interfaces") or "").strip()
         interfaces = [i for i in interfaces_raw.split(";") if i]
@@ -148,12 +168,21 @@ def build_candidate(
     edges: list[dict] = []
     external_candidates: set[str] = set()
     for dep in dependencies:
-        if dep["from_class"] not in group_set:
+        # Filter deps by the (from_class, from_file) pair so a class
+        # that exists as both AxForm and AxTable does not bleed edges
+        # from the sibling artifact into this group.
+        dep_key = (dep.get("from_class", ""), dep.get("from_file", ""))
+        if dep_key not in group_keys:
             continue
         to_class = dep["to_class"]
         if to_class.lower() in exclusion_lower:
             continue
-        if to_class in group_set:
+        # Heterogeneous targets: dependencies.csv does not carry
+        # `to_file`, so `to_in == node` uses class-name membership in
+        # the group. Acceptable because the target is addressed by
+        # name inside the .xpp (no artifact ambiguity at the call site
+        # beyond what the language already resolves).
+        if to_class in group_class_names:
             to_in = "node"
         else:
             to_in = "external_ref"
@@ -167,7 +196,7 @@ def build_candidate(
 
     external_refs: list[dict] = []
     for cls in sorted(external_candidates):
-        in_inv = cls in inventory_by_class
+        in_inv = cls in inventory_classes
         other_slug = class_to_group.get(cls, "") if in_inv else ""
         external_refs.append({
             "class": cls,
@@ -228,10 +257,19 @@ def main() -> int:
     exclusion_lower = load_exclusion_set(exclusion_md)
 
     inventory = read_csv_rows(inventory_path)
-    inventory_by_class: dict[str, dict] = {}
+    # Index inventory by (class, file). The same class name may appear
+    # multiple times across artifacts (AxForm + AxTable both named
+    # `AxnLicParameters`, etc), and each artifact has its own methods
+    # and dependencies. Collapsing by name would corrupt nodes[].file.
+    inventory_by_key: dict[tuple[str, str], dict] = {}
+    inventory_classes: set[str] = set()
     for row in inventory:
-        # Same class may appear multiple times (AxForm + AxTable) — keep first.
-        inventory_by_class.setdefault(row["class"], row)
+        cls = row.get("class") or ""
+        file_rel = row.get("file") or ""
+        if not cls or not file_rel:
+            continue
+        inventory_by_key[(cls, file_rel)] = row
+        inventory_classes.add(cls)
 
     dependencies = read_csv_rows(dependencies_path)
     class_to_group = build_class_to_group(funcionalidades_dir)
@@ -260,7 +298,8 @@ def main() -> int:
             continue
         candidate = build_candidate(
             funcionalidad=data,
-            inventory_by_class=inventory_by_class,
+            inventory_by_key=inventory_by_key,
+            inventory_classes=inventory_classes,
             dependencies=dependencies,
             class_to_group=class_to_group,
             exclusion_lower=exclusion_lower,
