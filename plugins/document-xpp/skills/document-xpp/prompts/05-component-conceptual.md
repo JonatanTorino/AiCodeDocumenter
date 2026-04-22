@@ -18,17 +18,18 @@
 1. Glob `funcionalidades_dir/*.yaml`.
 2. De cada YAML extraé: `slug`, `name`, `description`.
 3. Construí la lista de componentes:
-   - `alias` = `cmp_<slug>` (snake_case prefijado para evitar colisiones de nombre).
+   - `alias` = `cmp_<slug_snake>` donde `slug_snake` es el `slug` normalizado a snake_case (reemplazá `-` por `_`). Ej: `license-management` → `cmp_license_management`.
    - `label` = `name` del YAML.
    - `description` = primera oración del `description`, máximo 80 caracteres.
 
 ### Paso 3 — Construir el mapa de relaciones cross-grupo
 
 1. Para cada `diagram_candidates/<slug>.yaml`:
-   - Filtrá `external_refs[]` donde `in_inventory: true`.
-   - Cada entrada es una relación: `from = cmp_<slug>` → `to = cmp_<other_group_slug>`.
-2. Deduplicá pares `(from, to)` — si varios grupos del mismo módulo se referencian mutuamente, emitís UNA relación por par direccional.
-3. Elegí el label más representativo del contexto: si la mayoría de las referencias son `kind: uses` → `"usa"`; si hay `kind: calls` → `"invoca"`. Usá el vocabulario de `visual-conventions.md`.
+   - Filtrá `external_refs[]` donde `in_inventory: true`. Cada entrada identifica un par de grupos relacionados.
+   - Por cada `external_ref` con `in_inventory: true`, buscá en `edges[]` las aristas con `to_in: external_ref` cuyo `to` coincida con esa clase. Normalizá `slug` y `other_group_slug` a snake_case para los aliases.
+   - Relación: `from = cmp_<slug_snake>` → `to = cmp_<other_group_slug_snake>`.
+2. Deduplicá pares `(from, to)` — emitís UNA relación por par direccional.
+3. Para el label de cada relación: derivalo del `kind` de los `edges[]` que cruzan ese par de grupos. Si la mayoría son `kind: uses` → `"usa"`; si hay `kind: calls` → `"invoca"`. Usá el vocabulario de `visual-conventions.md`. Si no hay edges identificables, usá `"usa"` como default.
 4. Si ningún grupo tiene `external_refs[].in_inventory: true`, registrá un `warnings[]` con `"ningún grupo tiene relaciones cross-grupo detectadas"` y generá el diagrama sin relaciones.
 
 ### Paso 4 — Rellenar el template

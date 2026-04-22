@@ -24,17 +24,20 @@
 
 Aplicá la tabla de mapping de `agents/c4-component-writer.md`:
 
-| `role` / `artifact_kind` | Cluster |
+**Precedencia:** `artifact_kind` gana sobre `role`. Evaluá en este orden:
+
+| Regla de clasificación | Cluster |
 |---|---|
-| `service` | Servicios |
-| `controller` | Controladores |
-| `dto` | Contratos |
-| `table` | Tablas |
-| `view` | Vistas |
-| `helper` / `other` | Utilidades |
+| `artifact_kind = table` | Tablas |
+| `artifact_kind = view` | Vistas |
+| `role = service` | Servicios |
+| `role = controller` | Controladores |
+| `role = dto` | Contratos |
+| `role = entity` | Entidades |
+| `role = helper` / `role = other` | Utilidades |
 
 Para cada cluster con al menos 1 clase:
-- `alias` = `clu_<slug>_<cluster_en_snake_case>` (ej: `clu_subscription_servicios`).
+- `alias` = `clu_<slug_snake>_<cluster_en_snake_case>` donde `slug_snake` es el `slug` normalizado a snake_case (reemplazá `-` por `_`). Ej: `clu_subscription_servicios`, `clu_license_management_tablas`.
 - `label` = nombre del cluster (ej: `"Servicios"`).
 - `description` = breve descripción funcional del cluster dentro del grupo (ej: `"Lógica de negocio y orquestación"`).
 
@@ -45,11 +48,12 @@ Si el total de clases del grupo es < 5, agregá un `warnings[]` con `"grupo con 
 ### Paso 4 — Construir componentes externos y relaciones
 
 1. Para cada `external_refs[].in_inventory: true`:
-   - Creá un `Component_Ext` con `alias = cmp_ext_<other_group_slug>` y `label = <other_group_slug>` (usá el slug como label si no tenés el nombre — el workflow puede pasarlo).
+   - Normalizá `other_group_slug` a snake_case (`-` → `_`).
+   - Creá un `Component_Ext` con `alias = cmp_ext_<other_group_slug_snake>` y `label = <other_group_slug>` (usá el slug original como label).
 2. Para las relaciones internas al boundary (entre clusters):
    - Si hay edges en `edges[]` donde `from` y `to` pertenecen a clusters distintos → `Rel(clu_from, clu_to, "usa")`.
 3. Para las relaciones con externos:
-   - Si hay edges donde `to_in == external_ref` → `Rel(cluster_origen, cmp_ext_<slug>, "invoca")`.
+   - Si hay edges donde `to_in == external_ref` → `Rel(cluster_origen, cmp_ext_<other_group_slug_snake>, "invoca")`.
 
 ### Paso 5 — Rellenar el template
 

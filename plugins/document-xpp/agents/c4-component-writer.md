@@ -82,7 +82,7 @@ Devolvé **sólo** un bloque JSON dentro de ` ```json ... ``` `, nada más:
 
 ### Reglas del contrato
 
-- **`puml_path`** — coincide con `puml_output_path` que te pasó el orquestador. El archivo debe estar escrito en disco antes de devolver el JSON.
+- **`puml_path`** — coincide con `puml_output_path` que te pasó el orquestador. El archivo debe estar escrito en disco antes de devolver el JSON. **Excepción:** si los inputs faltan (ver "Qué hacer si falta información"), devolvé `puml_path: ""` y no escribas ningún archivo.
 - **`components_rendered`** — cantidad de `Component(...)` o clusters emitidos en el `.puml`. Para L1: un cluster por grupo funcional. Para L2: un cluster por tipo semántico presente.
 - **`relations_rendered`** — cantidad de `Rel(...)` emitidas.
 - **`omitted_groups[]`** — para L1: grupos que no pudieron renderizarse (falta YAML, etc.) con `{slug, reason}`. Para L2: siempre vacío.
@@ -92,14 +92,17 @@ Devolvé **sólo** un bloque JSON dentro de ` ```json ... ``` `, nada más:
 
 ## Mapping de roles a clusters (Nivel 2)
 
-| `role` / `artifact_kind` | Cluster |
+**Precedencia:** `artifact_kind` gana sobre `role`. Si `artifact_kind=table` → Tablas; si `artifact_kind=view` → Vistas; en cualquier otro caso, usar `role`.
+
+| Regla de clasificación | Cluster |
 |---|---|
-| `service` | Servicios |
-| `controller` | Controladores |
-| `dto` | Contratos |
-| `table` | Tablas |
-| `view` | Vistas |
-| `helper` / `other` | Utilidades |
+| `artifact_kind = table` | Tablas |
+| `artifact_kind = view` | Vistas |
+| `role = service` | Servicios |
+| `role = controller` | Controladores |
+| `role = dto` | Contratos |
+| `role = entity` | Entidades |
+| `role = helper` / `role = other` | Utilidades |
 
 Clusters con 0 clases se omiten sin warning. Si el grupo tiene < 5 clases en total, incluir un warning en `warnings[]`.
 
