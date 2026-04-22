@@ -1,6 +1,6 @@
 # Workflow 03 — Diagramas de clases
 
-**Objetivo:** producir un diagrama de clases PlantUML (`.puml`) por cada grupo funcional del workspace, combinando un script determinístico (candidatos por grupo) + el agente `diagram-writer` (decisiones semánticas) + validación humana.
+**Objetivo:** producir un diagrama de clases PlantUML (`.puml`) por cada grupo funcional del workspace, combinando un script determinístico (candidatos por grupo) + el agente `uml-diagram-writer` (decisiones semánticas) + validación humana.
 
 **Prerrequisito:** workflow `02-functional-map.md` cerrado sin bloqueos. El workspace debe tener `_tracking/manifest.yaml`, `_tracking/inventory.csv`, `_tracking/dependencies.csv` y al menos un `_tracking/funcionalidades/<slug>.yaml`.
 
@@ -59,9 +59,9 @@ En modo `nuevo`, saltá este paso: `grupos_a_regenerar` = todos los grupos.
 
 ---
 
-## Paso 4 — Delegar al agente `diagram-writer`
+## Paso 4 — Delegar al agente `uml-diagram-writer`
 
-Para cada `slug` en `grupos_a_regenerar`, invocá el subagente con `Agent` y `subagent_type: diagram-writer`. Pasale:
+Para cada `slug` en `grupos_a_regenerar`, invocá el subagente con `Agent` y `subagent_type: uml-diagram-writer`. Pasale:
 
 - **Path al candidate YAML** (`_tracking/diagram_candidates/<slug>.yaml`) — fuente determinística.
 - **Path al workspace** — para que resuelva `xpp_root` y `dbml_path` relativos.
@@ -70,7 +70,7 @@ Para cada `slug` en `grupos_a_regenerar`, invocá el subagente con `Agent` y `su
   - `references/visual-conventions.md` — reglas de estilo, catálogo de verbos (abierto-curado), paleta.
   - `references/exclusion-list.md` — ya aplicada por el script, pero el agente la valida de nuevo para no emitir nodos ruidosos.
 
-El agente devuelve un JSON con (ver contrato en `agents/diagram-writer.md`):
+El agente devuelve un JSON con (ver contrato en `agents/uml-diagram-writer.md`):
 - `puml_path` — path del `.puml` escrito.
 - `warnings[]` — verbos nuevos usados fuera del catálogo, nodos omitidos, cualquier desviación justificada.
 - `nodes_rendered`, `edges_rendered` — conteos para sanity-check.
@@ -139,7 +139,7 @@ Imprimí:
 - Cantidad de diagramas conservados (modo incremental).
 - Warnings agregados (verbos nuevos fuera del catálogo + nodos omitidos).
 - Ruta del `functional_map.md` actualizado.
-- Próxima fase: **04 — Diagramas de componentes (C4 — M3, no disponible todavía)**.
+- Próxima fase: **05 — Diagramas de componentes C4** (`workflows/05-component-diagrams.md`).
 
 ---
 
@@ -152,4 +152,4 @@ Al cerrar este workflow:
 - `<workspace>/_tracking/funcionalidades/<slug>.yaml` tiene `artifacts.class_diagram` apuntando al `.puml`.
 - `<workspace>/functional_map.md` linkea cada `.puml` desde el grupo correspondiente.
 
-**No avances** a Fase 4 hasta que M3 esté implementado. M2 cierra acá.
+Podés avanzar directamente a **Fase 5 — Diagramas de componentes C4** (`workflows/05-component-diagrams.md`). Fase 4 (secuencia) se habilita en M4.

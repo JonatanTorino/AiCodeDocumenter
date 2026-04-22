@@ -3,7 +3,7 @@
 Emit one `_tracking/diagram_candidates/<slug>.yaml` per functional group
 in a document-xpp workspace.
 
-This is the deterministic input to Fase 3. The `diagram-writer` agent
+This is the deterministic input to Fase 3. The `uml-diagram-writer` agent
 consumes these candidate YAMLs and, for each group, opens the `.xpp`
 files referenced by `nodes[].file` and the DBML at
 `sources.dbml_path` to decide how to render the class diagram.

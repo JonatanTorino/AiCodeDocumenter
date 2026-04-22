@@ -16,8 +16,9 @@ El repo **es** el marketplace local desde el cual se instala el plugin. No es un
 
 - **M1 mergeado** en `master` (merge commit `f6a2db7`, 2026-04-21). Cubre Fase 1 (bootstrap) y Fase 2 (mapa funcional) end-to-end en modo `nuevo`.
 - **M1.5 mergeado** (merge commit `4955ac0`, 2026-04-21). Docs de contexto + `visual-conventions.md` + `.validation/` reclasificado como ephemeral.
-- **M2 en revisión** — diagramas de clases MVP. Implementa Fase 3 end-to-end (`build_class_diagrams.py` determinista + agente `diagram-writer` + catálogo de verbos abierto-curado + manifest DBML). PR abierto, pendiente de merge al cierre de sesión.
-- **M3, M4, M5** pendientes. Plan completo de milestones: `analiza-todo-el-contenido-lucky-metcalfe.md`.
+- **M2 mergeado** en `master` (merge commit `e9b452d`, 2026-04-22). Diagramas de clases MVP: `build_class_diagrams.py` determinista + agente `uml-diagram-writer` + catálogo de verbos abierto-curado + manifest DBML.
+- **M3 en revisión** — diagramas de componentes C4. Implementa Fase 5 end-to-end: agente `c4-component-writer` (L1 conceptual + L2 detallado), workflow 05, prompts 05, templates PlantUML C4, referencia `c4-plantuml-usage.md`. Rename `diagram-writer` → `uml-diagram-writer` incluido. PR abierto, pendiente de merge.
+- **M4, M5** pendientes. Plan completo de milestones: `analiza-todo-el-contenido-lucky-metcalfe.md`.
 
 ## Dónde está cada cosa
 
@@ -36,7 +37,8 @@ El repo **es** el marketplace local desde el cual se instala el plugin. No es un
 |---|---|
 | Fase 1 (bootstrap) | `plugins/document-xpp/skills/document-xpp/workflows/01-bootstrap.md` |
 | Fase 2 (mapa funcional) | `workflows/02-functional-map.md` + `agents/functional-classifier.md` + `prompts/01-*.md` + `prompts/02-*.md` |
-| Fase 3 (diagramas de clases) | `workflows/03-class-diagrams.md` + `agents/diagram-writer.md` + `prompts/03-class-diagram.md` + `templates/class-diagram.puml.tpl` |
+| Fase 3 (diagramas de clases) | `workflows/03-class-diagrams.md` + `agents/uml-diagram-writer.md` + `prompts/03-class-diagram.md` + `templates/class-diagram.puml.tpl` |
+| Fase 5 (diagramas de componentes C4) | `workflows/05-component-diagrams.md` + `agents/c4-component-writer.md` + `prompts/05-component-conceptual.md` + `prompts/05-component-detailed.md` + `references/c4-plantuml-usage.md` + `templates/component-diagram-l1.puml.tpl` + `templates/component-diagram-l2.puml.tpl` |
 | Candidatos deterministas Fase 3 | `scripts/build_class_diagrams.py` (Python ≥ 3.10, requiere **PyYAML ≥ 6.0**; emite `_tracking/diagram_candidates/<slug>.yaml` por grupo) |
 | Parser X++ / AxEnum / AxEdt | `scripts/build_xpp_inventory.py` (Python ≥ 3.10, stdlib-only; docstring documenta limitaciones conocidas — AxEnum/AxEdt dormant hasta que upstream los extraiga) |
 | Hashing MD5 | `scripts/Compute-XppHashes.ps1` (PowerShell 5.1+) |
