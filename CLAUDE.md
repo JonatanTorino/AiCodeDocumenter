@@ -15,9 +15,9 @@ El repo **es** el marketplace local desde el cual se instala el plugin. No es un
 ## Estado actual
 
 - **M1 mergeado** en `master` (merge commit `f6a2db7`, 2026-04-21). Cubre Fase 1 (bootstrap) y Fase 2 (mapa funcional) end-to-end en modo `nuevo`.
-- **M1.5 en curso** — limpieza de docs de contexto para IAs + `visual-conventions.md`.
-- **M2 en planificación** — diagramas de clases MVP con re-etiquetado semántico de relaciones.
-- Plan completo de milestones: `analiza-todo-el-contenido-lucky-metcalfe.md`.
+- **M1.5 mergeado** (merge commit `4955ac0`, 2026-04-21). Docs de contexto + `visual-conventions.md` + `.validation/` reclasificado como ephemeral.
+- **M2 en revisión** — diagramas de clases MVP. Implementa Fase 3 end-to-end (`build_class_diagrams.py` determinista + agente `diagram-writer` + catálogo de verbos abierto-curado + manifest DBML). PR abierto, pendiente de merge al cierre de sesión.
+- **M3, M4, M5** pendientes. Plan completo de milestones: `analiza-todo-el-contenido-lucky-metcalfe.md`.
 
 ## Dónde está cada cosa
 
@@ -36,16 +36,18 @@ El repo **es** el marketplace local desde el cual se instala el plugin. No es un
 |---|---|
 | Fase 1 (bootstrap) | `plugins/document-xpp/skills/document-xpp/workflows/01-bootstrap.md` |
 | Fase 2 (mapa funcional) | `workflows/02-functional-map.md` + `agents/functional-classifier.md` + `prompts/01-*.md` + `prompts/02-*.md` |
-| Parser X++ / AxEnum / AxEdt | `scripts/build_xpp_inventory.py` (Python ≥ 3.10, stdlib-only; docstring documenta limitaciones conocidas) |
+| Fase 3 (diagramas de clases) | `workflows/03-class-diagrams.md` + `agents/diagram-writer.md` + `prompts/03-class-diagram.md` + `templates/class-diagram.puml.tpl` |
+| Candidatos deterministas Fase 3 | `scripts/build_class_diagrams.py` (Python ≥ 3.10, requiere **PyYAML ≥ 6.0**; emite `_tracking/diagram_candidates/<slug>.yaml` por grupo) |
+| Parser X++ / AxEnum / AxEdt | `scripts/build_xpp_inventory.py` (Python ≥ 3.10, stdlib-only; docstring documenta limitaciones conocidas — AxEnum/AxEdt dormant hasta que upstream los extraiga) |
 | Hashing MD5 | `scripts/Compute-XppHashes.ps1` (PowerShell 5.1+) |
-| Estilo visual de diagramas | `plugins/document-xpp/skills/document-xpp/references/visual-conventions.md` |
+| Estilo visual de diagramas | `plugins/document-xpp/skills/document-xpp/references/visual-conventions.md` (catálogo de verbos **abierto-curado** — agentes registran nuevos en `warnings[]`) |
 
 ### Tier 3 — Contexto histórico (entender POR QUÉ algo se hizo así)
 
 | Archivo | Usalo cuando... |
 |---|---|
 | `M0.2-investigacion-plugin-uml/03-decision.md` | Te preguntás por qué se adoptó `visualization@melodic-software` y no CLI directo a PlantUML |
-| `plugins/document-xpp/.validation/m1-workspace-sample/` | Necesitás ver output real del flujo M1 contra un módulo D365 concreto (48 clases, 135 deps, 7 grupos). Sirve de *regression baseline* |
+| `plugins/document-xpp/.validation/` (ephemeral, gitignored) | Generá un workspace local si necesitás ver output real del flujo contra un módulo D365 concreto (regression baseline). M1.5 lo reclasificó como ephemeral — ya no se versiona |
 | `discontinued/` | Querés entender el flujo legacy pre-plugin (prompts numerados + LLM externo manual). **NO consumir como fuente de verdad** — es archivo histórico |
 | `analiza-todo-el-contenido-lucky-metcalfe.md` | Buscás el plan maestro de milestones M0–M5 |
 
