@@ -1,0 +1,428 @@
+﻿using Microsoft.Dynamics.AX.Metadata.MetaModel;
+using Microsoft.Dynamics.AX.Metadata.Providers;
+using Microsoft.Dynamics.AX.Metadata.Storage;
+using Microsoft.Dynamics.AX.Metadata.Storage.DiskProvider;
+using Microsoft.Dynamics.ApplicationPlatform.Environment;
+
+internal final class AxnLicMetadataChecker
+{
+    IMetadataProvider provider;
+    AxnLicMetadataCheckerContract contract;
+    public static AxnLicMetadataChecker discoverTaggedComponents()
+    {
+        AxnLicMetadataChecker checker = new AxnLicMetadataChecker();
+        checker.iterateModules();
+
+        return checker;
+    }
+
+    private void new()
+    {
+        this.initMetadataProvider();
+        this.initMetadataContract();
+    }
+
+    private void initMetadataProvider()
+    {
+        var environment = EnvironmentFactory::GetApplicationEnvironment();
+        str packageDir = environment.get_Aos().get_PackageDirectory();
+
+        DiskProviderConfiguration diskProviderConfiguration = new DiskProviderConfiguration();
+        diskProviderConfiguration.AddMetadataPath(packageDir);
+
+        MetadataProviderFactory metadataProviderFactory = new MetadataProviderFactory();
+        provider = metadataProviderFactory.CreateDiskProvider(diskProviderConfiguration);
+    }
+
+    private void initMetadataContract()
+    {
+        contract = new AxnLicMetadataCheckerContract();
+    }
+
+    private void iterateModules()
+    {
+        AxnLicSubscriptionExtension susbcriptionExtension;
+        while select susbcriptionExtension
+        {
+            var modulesInfo = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetModelsInModule(susbcriptionExtension.AOSModuleName);
+            var modulesEnumerator = modulesInfo.GetEnumerator();
+
+            while (modulesEnumerator.MoveNext())
+            {
+                ModelInfo modelInfo = modulesEnumerator.get_Current();
+                this.initModelMetadata(modelInfo.Name);
+            }
+        }
+    }
+
+    private void initModelMetadata(ModelName _modelName)
+    {
+        this.initForms(_modelName);
+        this.initFormExtensions(_modelName);
+        this.initMenues(_modelName);
+        this.initMenuesExtensions(_modelName);
+    }
+
+    private void initMenuesExtensions(ModelName _modelName)
+    {
+        CLRObject menues = provider.MenuExtensions.ListObjectsForModel(_modelName);
+        CLRObject menuEnumerator = menues.GetEnumerator();
+
+        while (menuEnumerator.MoveNext())
+        {
+            try
+            {
+                MenuName menuName = menuEnumerator.get_Current();
+                Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenu menuMeta = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenu(this.getBaseFormName(menuName));
+                str tag = menuMeta ? menuMeta.Tags : '';
+
+                // Solo guardar si el tag está definido (no vacío)
+                if (tag)
+                {
+                    this.insertMenuTags(menuMeta.Name, 'Menu', menuMeta.Tags);
+                }
+
+                this.processMenuRecursive(menuMeta.Elements);
+            }
+            catch (Exception::Error)
+            {
+                // Manejar errores si es necesario, por ejemplo, registrar el error y continuar con el siguiente formulario
+                continue;
+            }
+        }
+    }
+
+    private void initMenues(ModelName _modelName)
+    {
+        CLRObject menues = provider.Menus.ListObjectsForModel(_modelName);
+        CLRObject menuEnumerator = menues.GetEnumerator();
+
+        while (menuEnumerator.MoveNext())
+        {
+            try
+            {
+                MenuName menuName = menuEnumerator.get_Current();
+                Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenu menuMeta = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenu(menuName);
+                str tag = menuMeta ? menuMeta.Tags : '';
+
+                // Solo guardar si el tag está definido (no vacío)
+                if (tag)
+                {
+                    this.insertMenuTags(menuMeta.Name, 'Menu', menuMeta.Tags);
+                }
+
+                this.processMenuRecursive(menuMeta.Elements);
+            }
+            catch (Exception::Error)
+            {
+                // Manejar errores si es necesario, por ejemplo, registrar el error y continuar con el siguiente formulario
+                continue;
+            }
+        }
+    }
+
+    public void processMenuRecursive(CLRObject elements)
+    {
+        CLRObject enumerator = elements.GetEnumerator();
+
+        while (enumerator.MoveNext())
+        {
+            Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElement child = enumerator.get_Current();
+
+            switch(child)
+            {
+                case child as Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementSubMenu:
+                    Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementSubMenu menuElementSubMenu = enumerator.get_Current();
+
+                    this.processMenuRecursive(menuElementSubMenu.Elements);
+                    break;
+                case child as Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuItem:
+
+                    Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuItem childMenuElementMenuItem = enumerator.get_Current();
+
+                    this.childMenuElementItem(childMenuElementMenuItem);
+
+                    //Por el elemento armado en el menu
+                    //if(childMenuElementMenuItem.Tags)
+                    //{
+                    //    this.insertMenuTags(childMenuElementMenuItem.Name, enum2str(childMenuElementMenuItem.MenuItemType), childMenuElementMenuItem.Tags);
+                    //}
+                    break;
+                case child as Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuReference:
+                    Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuReference childMenuElementMenuReference = enumerator.get_Current();
+
+                    this.childMenuElementItemMenu(childMenuElementMenuReference);
+
+                    break;
+                case child as Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementSeparator:
+                case child as Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementTile:
+                    break;
+
+            }
+        }
+    }
+
+    /// <summary>
+    /// childMenuElementItemMenu
+    /// </summary>
+    /// <param name = "_child">Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuReference</param>
+    private void childMenuElementItemMenu(Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuReference _child)
+    {
+        if(!_child.MenuName)
+        {
+            return;
+        }
+
+        Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenu menuReferenced = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenu(_child.MenuName);
+
+        if (!_child.Tags)
+        {
+            return;
+        }
+
+        this.insertMenuTags(_child.Name, 'Menu', _child.Tags);
+
+        this.processMenuRecursive(menuReferenced.Elements);
+
+    }
+
+    /// <summary>
+    /// childMenuElementItem
+    /// </summary>
+    /// <param name = "_child">(Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuItem</param>
+    private void childMenuElementItem(Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuElementMenuItem _child)
+    {
+        Microsoft.Dynamics.AX.Metadata.MetaModel.AxMenuItem menuItem;
+
+        if (_child.MenuItemType == Microsoft.Dynamics.AX.Metadata.Core.MetaModel.MenuItemType::Display)
+        {
+            menuItem = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenuItemDisplay(_child.MenuItemName);
+        }
+        else if (_child.MenuItemType == Microsoft.Dynamics.AX.Metadata.Core.MetaModel.MenuItemType::Action)
+        {
+            menuItem = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenuItemAction(_child.MenuItemName);
+        }
+        else if(_child.MenuItemType == Microsoft.Dynamics.AX.Metadata.Core.MetaModel.MenuItemType::Output)
+        {
+            menuItem = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetMenuItemOutput(_child.MenuItemName);
+        }
+
+        if(menuItem && menuItem.Tags)
+        {
+            this.insertMenuTags(menuItem.Name, enum2str(_child.MenuItemType), menuItem.Tags);
+        }
+    }
+
+    private void insertMenuTags(str _menuName, str _menuType, str _tags)
+    {
+        container tagsCon = str2con(_tags, ',');
+        for (int i = 1; i <= conLen(tagsCon); i++)
+        {
+            str currentTag = conPeek(tagsCon, i);
+            contract.parmTaggedMenues().addEnd([_menuName, _menuType, currentTag]);
+        }
+    }
+
+    /// <summary>
+    /// Inicializa el mapa con los formularios del modelo indicado y su respectivo tag (si existe).
+    /// </summary>
+    private void initForms(ModelName _modelName)
+    {
+        CLRObject forms = provider.Forms.ListObjectsForModel(_modelName);
+        CLRObject formEnumerator = forms.GetEnumerator();
+
+        while (formEnumerator.MoveNext())
+        {
+            try
+            {
+                FormName formName = formEnumerator.get_Current();
+                AxForm formMeta = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetForm(formName);
+                str tag = formMeta ? formMeta.Tags : '';
+
+                // Solo guardar si el tag está definido (no vacío)
+                if (tag)
+                {
+                    this.insertFormTags(formName, tag);
+                }
+
+                // Recorrer todos los controles (recursivamente)
+                this.processControlsRecursive(formMeta.Design.Controls, formName, formMeta.DataSources);
+            }
+            catch (Exception::Error)
+            {
+                // Manejar errores si es necesario, por ejemplo, registrar el error y continuar con el siguiente formulario
+                continue;
+            }
+        }
+    }
+
+    private void insertFormTags(FormName _formName, str _tags)
+    {
+        container tagsCon = str2con(_tags, ',');
+        for (int i = 1; i <= conLen(tagsCon); i++)
+        {
+            str currentTag = conPeek(tagsCon, i);
+            contract.parmTaggedForms().addEnd([_formName, currentTag]);
+        }
+    }
+
+    private str findTableForFormDatasource(CLRObject _formDataSources, str _datasourceName)
+    {
+        CLRObject datasourceEnumerator = _formDataSources.GetEnumerator();
+        while (datasourceEnumerator.MoveNext())
+        {
+            Microsoft.Dynamics.AX.Metadata.MetaModel.AxFormDataSource datasource = datasourceEnumerator.get_Current();
+            if (datasource.Name == _datasourceName)
+            {
+                return datasource.Table;
+            }
+        }
+
+        return '';
+    }
+
+    private str getControlTag(Microsoft.Dynamics.AX.Metadata.MetaModel.AxFormControl _control, CLRObject _formDatasources)
+    {
+        str tag = '';
+        if (_control.Tags != '')
+        {
+            return _control.Tags;
+        }
+
+        if (_control is Microsoft.Dynamics.AX.Metadata.MetaModel.IControlDataField)
+        {
+            Microsoft.Dynamics.AX.Metadata.MetaModel.IControlDataField dataFieldControl = _control as Microsoft.Dynamics.AX.Metadata.MetaModel.IControlDataField;
+            if (!dataFieldControl.DataSource)
+            {
+                return '';
+            }
+
+            str tableName = this.findTableForFormDatasource(_formDatasources, dataFieldControl.DataSource);
+            Microsoft.Dynamics.AX.Metadata.MetaModel.AxTableField tableField = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetTableField(tableName, dataFieldControl.DataField);
+
+            if (!tableField)
+            {
+                return '';
+            }
+
+            if (tableField.Tags)
+            {
+                return tableField.Tags;
+            }
+
+            // Este es el código que hay que ajustar a los ifs que sirvan de cortocircuito
+            if (tableField is Microsoft.Dynamics.AX.Metadata.MetaModel.AxTableFieldEnum)
+            {
+                Microsoft.Dynamics.AX.Metadata.MetaModel.AxTableFieldEnum enumField = tableField as Microsoft.Dynamics.AX.Metadata.MetaModel.AxTableFieldEnum;
+                Microsoft.Dynamics.AX.Metadata.MetaModel.AxEnum enum = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetEnum(enumField.EnumType);
+
+                if (enum && enum.Tags)
+                {
+                    return enum.Tags;
+                }
+            }
+            else
+            {
+                Microsoft.Dynamics.AX.Metadata.MetaModel.AxEdt edt = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetEdt(tableField.ExtendedDataType);
+                if (edt && edt.Tags)
+                {
+                    return edt.Tags;
+                }
+            }
+        }
+
+        return tag;
+    }
+
+    private void processControlsRecursive(CLRObject controls, FormName _formName, CLRObject _datasources)
+    {
+        if (!controls)
+            return;
+
+        CLRObject ctrlEnum = controls.GetEnumerator();
+
+        while (ctrlEnum.MoveNext())
+        {
+            CLRObject control = ctrlEnum.get_Current();
+
+            if (!control)
+                continue;
+
+            // Si sabes que el objeto es un AxFormControl, puedes hacer el cast
+            Microsoft.Dynamics.AX.Metadata.MetaModel.AxFormControl axCtrl = control is AxFormExtensionControl ? control.get_FormControl() : control;
+
+            str tag = this.getControlTag(axCtrl, _datasources);
+
+            // Si el control tiene Tag definido, lo guardamos
+            if (tag)
+            {
+                this.insertFormControlTags(_formName, axCtrl.Name, tag);
+            }
+
+            // Si el control tiene hijos, los recorremos también
+
+            CLRObject formControlsChilds = this.getChildControls(axCtrl);
+            if (formControlsChilds)
+            {
+                this.processControlsRecursive(formControlsChilds, _formName, _datasources);
+            }
+        }
+    }
+
+    private CLRObject getChildControls(Microsoft.Dynamics.AX.Metadata.MetaModel.AxFormControl _control)
+    {
+        if (_control is Microsoft.Dynamics.AX.Metadata.MetaModel.AxFormControlWithChildren)
+        {
+            Microsoft.Dynamics.AX.Metadata.MetaModel.AxFormControlWithChildren controlWithChildren = _control as Microsoft.Dynamics.AX.Metadata.MetaModel.AxFormControlWithChildren;
+            return controlWithChildren.Controls;
+        }
+        return null;
+    }
+
+    private void initFormExtensions(ModelName _modelName)
+    {
+        CLRObject formExtensions = provider.FormExtensions.ListObjectsForModel(_modelName);
+        CLRObject formExtensionsEnumerator = formExtensions.GetEnumerator();
+
+        while (formExtensionsEnumerator.MoveNext())
+        {
+            try
+            {
+                str extensionName = formExtensionsEnumerator.get_Current();
+                AxFormExtension formExtensionMeta = Microsoft.Dynamics.Ax.Xpp.MetadataSupport::GetFormExtension(extensionName);
+                FormName formName = this.getBaseFormName(extensionName);
+
+                var dataSources = formExtensionMeta.DataSources;
+                this.processControlsRecursive(formExtensionMeta.Controls, formName, dataSources);
+            }
+            catch (Exception::Error)
+            {
+                // Manejar errores si es necesario, por ejemplo, registrar el error y continuar con el siguiente formulario
+                continue;
+            }
+        }
+    }
+
+    private void insertFormControlTags(str _formName, str _formControlName, str _tags)
+    {
+        container tagsCon = str2con(_tags, ',');
+        for (int i = 1; i <= conLen(tagsCon); i++)
+        {
+            str currentTag = conPeek(tagsCon, i);
+            contract.parmTaggedFormExtensions().addEnd([_formName, _formControlName, currentTag]);
+        }
+    }
+
+    private str getBaseFormName(str _extensionName)
+    {
+        container extNameCon = str2Con(_extensionName, '.');
+        str baseFormName = conPeek(extNameCon, 1);
+
+        return baseFormName;
+    }
+
+    public AxnLicMetadataCheckerContract getContract()
+    {
+        return contract;
+    }
+}

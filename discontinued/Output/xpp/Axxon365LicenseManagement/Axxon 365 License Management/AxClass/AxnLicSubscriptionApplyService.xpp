@@ -1,0 +1,88 @@
+﻿internal final class AxnLicSubscriptionApplyService
+{
+    public void run()
+    {
+        DialogButton result = Box::okCancel('Esta seguro de que desea actualizar la suscripción?', DialogButton::Ok);
+        if (result != DialogButton::Ok)
+        {
+            return;
+        }
+
+        ttsbegin;
+        AxnLicSubscription subscription = this.overrideSubscription();
+        this.overrideExtensions(subscription);
+        AxnLicSubscriptionSync::syncAll();
+        ttscommit;
+    }
+
+    private AxnLicSubscription overrideSubscription()
+    {
+        AxnLicSubscriptionPatch subscriptionStaging = AxnLicSubscriptionPatch::find();
+
+        if (!subscriptionStaging)
+        {
+            throw error('Por favor obtener la suscripción antes de ejecutar la actualización');
+        }
+
+        AxnLicSubscription subscription = AxnLicSubscription::find(true);
+
+        subscription.initFromStagingTable(subscriptionStaging);
+
+        subscription.write();
+
+        AxnLicDataIntegrityService::saveHash(subscription);
+
+        return subscription;
+    }
+
+    private void overrideExtensions(AxnLicSubscription _subscription)
+    {
+        AxnLicSubscriptionExtensionPatch extensionStaging;
+        AxnLicSubscriptionExtension extension;
+
+        // 1) Extensiones en staging y en real
+        while select forupdate extension
+        outer join extensionStaging
+            where extension.ExtensionId == extensionStaging.ExtensionId
+        {
+            extension.SubscriptionRecId = _subscription.RecId;
+            extension.ExtensionName  = extensionStaging.ExtensionName;
+
+            // Solo pasa a Active si antes estaba Installed
+            extension.LicenseStatus =
+            (extension.LicenseStatus == AxnLicExtensionStatus::Installed)
+            ? AxnLicExtensionStatus::Active
+            : extension.LicenseStatus;
+
+            extension.write();
+        }
+
+        // 2) Extensiones en staging pero NO en real
+        while select extensionStaging
+        notexists join extension
+            where extensionStaging.ExtensionId == extension.ExtensionId
+        {
+            extension.clear();
+
+            extension.SubscriptionRecId = _subscription.RecId;
+            extension.ExtensionId    = extensionStaging.ExtensionId;
+            extension.ExtensionName  = extensionStaging.ExtensionName;
+            extension.LicenseStatus  = AxnLicExtensionStatus::NotInstalled;
+
+            extension.write();
+        }
+
+        // 3) Extensiones en real que YA NO están en staging
+        //    → Si estaban Active, se deben bajar a Installed
+        while select forupdate extension
+        notexists join extensionStaging
+            where extension.ExtensionId == extensionStaging.ExtensionId
+        {
+            if (extension.LicenseStatus == AxnLicExtensionStatus::Active)
+            {
+                extension.LicenseStatus = AxnLicExtensionStatus::Installed;
+                extension.write();
+            }
+        }
+    }
+}

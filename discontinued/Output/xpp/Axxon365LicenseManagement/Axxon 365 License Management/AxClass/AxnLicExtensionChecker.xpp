@@ -1,0 +1,27 @@
+﻿public final class AxnLicExtensionChecker
+{
+    [Hookable(false)]
+    public static boolean isEnabled(AxnLicSubscriptionExtensionId _extensionId)
+    {
+        AxnLicExtensionChecker checker = new AxnLicExtensionChecker();
+
+        boolean ret = checker.hasValidState(_extensionId);
+        ret = ret && checker.hasActiveLicense(_extensionId);
+        ret = ret && AxnLicSubscriptionChecker::isEnabled();
+
+        return ret;
+    }
+
+    private boolean hasActiveLicense(AxnLicSubscriptionExtensionId _extensionId)
+    {
+        AxnLicSubscriptionExtension subsRef = AxnLicSubscriptionExtension::findByExtensionId(_extensionId);
+        return subsRef && subsRef.LicenseStatus == AxnLicExtensionStatus::Active;
+    }
+
+    private boolean hasValidState(AxnLicSubscriptionExtensionId _extensionId)
+    {
+        AxnLicSubscriptionExtensionState stateTable =
+            AxnLicSubscriptionExtensionState::findByExtensionId(_extensionId, curExt());
+        return stateTable && stateTable.State == AxnLicState::Enabled;
+    }
+}

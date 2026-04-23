@@ -1,0 +1,33 @@
+﻿public class AxnLicSubscriptionExtensionFeature extends common
+{
+    public static AxnLicSubscriptionExtensionFeature findByFeatureId(
+        AxnLicSubscriptionExtensionId _extensionId,
+        AxnLicSubscriptionExtensionFeatureId _featureId,
+        boolean _forUpdate = false)
+    {
+        AxnLicSubscriptionExtensionFeature featureTable;
+        AxnLicSubscriptionExtension extensionTable;
+
+        featureTable.selectForUpdate(_forUpdate);
+        select firstonly featureTable
+                where featureTable.FeatureId == _featureId
+            exists join extensionTable
+                where extensionTable.ExtensionId == featureTable.ExtensionId
+                    && extensionTable.ExtensionId == _extensionId;
+
+        return featureTable;
+    }
+
+    public static AxnLicSubscriptionExtensionFeature find(
+        AxnLicSubscriptionExtensionFeatureId _featureId,
+        boolean _forUpdate = false)
+    {
+        AxnLicSubscriptionExtensionFeature featureTable;
+        featureTable.selectForUpdate(_forUpdate);
+
+        select firstonly featureTable
+            where featureTable.FeatureId == _featureId;
+
+        return featureTable;
+    }
+}

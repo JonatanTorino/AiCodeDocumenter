@@ -1,0 +1,26 @@
+﻿/// <summary>
+/// AxnLicTaggedFeaturesElementsDiscoverService
+/// </summary>
+internal final class AxnLicTaggedFeaturesElementsDiscoverService
+{
+    /// <summary>
+    /// run
+    /// </summary>
+    public void run()
+    {
+        try
+        {
+            AxnLicMetadataChecker checker = AxnLicMetadataChecker::discoverTaggedComponents();
+            AxnLicMetadataCheckerContract contract = checker.getContract();
+
+            AxnLicTaggedMenu::initFromTaggedMenu(contract.parmTaggedMenues());
+            AxnLicTaggedForm::initFromTaggedForms(contract.parmTaggedForms());
+            AxnLicTaggedFormControl::initFromTaggedFormControls(contract.parmTaggedFormExtensions());
+            info("@AxnLicenseManagement:TaggedElementsDiscoverySuccesful");
+        }
+        catch (Exception::Error)
+        {
+            throw error("@AxnLicenseManagement:ErrorDiscoveryTags");
+        }
+    }
+}

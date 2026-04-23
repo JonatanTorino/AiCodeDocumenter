@@ -1,0 +1,14 @@
+﻿interface IAxnLicHttpClient
+{
+    Map parmHeaders(Map _headers)
+    {
+    }
+
+    System.Net.Http.HttpResponseMessage invokeMethodWithBody(str _url, str _method, str _body)
+    {
+    }
+
+    System.Net.Http.HttpResponseMessage send(System.Net.Http.HttpRequestMessage _req)
+    {
+    }
+}

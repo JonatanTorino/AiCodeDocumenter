@@ -1,0 +1,24 @@
+﻿class AxnLicHttpAuthProviderBearer implements IAxnLicHttpAuthProvider
+{
+    private str token;
+    public void new(str _token)
+    {
+        if (!_token)
+        {
+            throw error("Bearer token not provided");
+        }
+
+        token = _token;
+    }
+
+    public void augment(System.Net.Http.HttpRequestMessage _req)
+    {
+        if (!token)
+        {
+            throw error("Bearer token not provided");
+        }
+
+        System.Net.Http.Headers.HttpRequestHeaders headers = _req.Headers;
+        headers.Add("Authorization", strFmt("Bearer %1", token));
+    }
+}

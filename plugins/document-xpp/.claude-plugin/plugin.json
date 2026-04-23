@@ -1,0 +1,13 @@
+{
+  "name": "document-xpp",
+  "version": "0.1.0",
+  "description": "Automatiza la documentación técnica de soluciones Dynamics 365 F&O en X++: mapa funcional, diagramas de clases, secuencia y C4. Soporta documentación desde cero y actualización incremental con detección de cambios por hash.",
+  "author": {
+    "name": "Jonatan Torino",
+    "email": "jtorino@axxonconsulting.com"
+  },
+  "homepage": "https://github.com/JonatanTorino/AiCodeDocumenter",
+  "repository": "https://github.com/JonatanTorino/AiCodeDocumenter",
+  "license": "MIT",
+  "keywords": ["dynamics-365", "f-and-o", "x++", "axapta", "plantuml", "c4", "documentation"]
+}

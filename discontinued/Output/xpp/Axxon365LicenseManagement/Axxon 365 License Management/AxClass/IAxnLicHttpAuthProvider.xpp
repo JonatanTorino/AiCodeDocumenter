@@ -1,0 +1,6 @@
+﻿interface IAxnLicHttpAuthProvider
+{
+    void augment(System.Net.Http.HttpRequestMessage _req)
+    {
+    }
+}

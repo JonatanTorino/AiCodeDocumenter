@@ -1,0 +1,23 @@
+﻿public class AxnLicSubscription extends common
+{
+    public static AxnLicSubscription find(boolean _forUpdate = false)
+    {
+        AxnLicSubscription subscription;
+        subscription.selectForUpdate(_forUpdate);
+
+        select firstOnly subscription;
+
+        return subscription;
+    }
+
+    public void initFromStagingTable(AxnLicSubscriptionPatch _staging)
+    {
+        this.SubscriptionId = _staging.SubscriptionId;
+        this.SubscriptionName = _staging.SubscriptionName;
+        this.UsersQuantity = _staging.UsersQuantity;
+        this.LicenseStatus = _staging.LicenseStatus;
+        this.ValidFrom = _staging.ValidFrom;
+        this.ValidTo = _staging.ValidTo;
+        this.FinalDate = _staging.FinalDate;
+    }
+}

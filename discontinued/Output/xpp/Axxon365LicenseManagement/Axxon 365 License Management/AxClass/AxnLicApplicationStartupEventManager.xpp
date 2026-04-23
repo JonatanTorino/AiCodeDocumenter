@@ -1,0 +1,60 @@
+﻿internal final class AxnLicApplicationStartupEventManager
+{
+    static boolean initialized;
+    // Inicio Aplicación
+    [SubscribesTo(classStr(ApplicationStartupEventManager), staticDelegateStr(ApplicationStartupEventManager, onSystemStartup))]
+    static void onSystemStartup()
+    {
+        AxnLicParameters parameter;
+        select firstonly  parameter;
+        if (parameter.AutoDiscoveryOnStartup)
+        {
+            // Descubrimiento features
+            new AxnLicComponentDiscoveryService().run();
+
+            // Descubrimiento de menues con tags
+            new AxnLicTaggedFeaturesElementsDiscoverService().run();
+        }
+    }
+
+    /// <summary>
+    ///
+    /// </summary>
+    [SubscribesTo(classStr(ApplicationStartupEventManager), staticDelegateStr(ApplicationStartupEventManager, onInteractiveSessionCreated))]
+    public static void ApplicationStartupEventManager_onInteractiveSessionCreated()
+    {
+        if (!initialized)
+        {
+            AxnLicSubscriptionStatus status = AxnLicSubscriptionChecker::evaluateStatus();
+            if (status == AxnLicSubscriptionStatus::GracePeriod)
+            {
+                AxnLicNotificationService::addAction(
+                "@AxnLicenseManagement:WarningPeriod",
+                "@AxnLicenseManagement:NavigateParams",
+                MessageSeverity::Warning,
+                menuItemDisplayStr(AxnLicParameters)
+                );
+            }
+
+            if (status == AxnLicSubscriptionStatus::Expired)
+            {
+                AxnLicNotificationService::addAction(
+                "@AxnLicenseManagement:ErrorExpired",
+                "@AxnLicenseManagement:NavigateParams",
+                MessageSeverity::Error,
+                menuItemDisplayStr(AxnLicParameters));
+            }
+
+            if (!AxnLicSubscriptionChecker::hasLicensedUser())
+            {
+                AxnLicNotificationService::addAction(
+                "@AxnLicenseManagement:ErrorUserLicense",
+                "@AxnLicenseManagement:NavigateUsers",
+                MessageSeverity::Warning,
+                menuItemDisplayStr(AxnLicUser));
+            }
+
+            initialized = true;
+        }
+    }
+}

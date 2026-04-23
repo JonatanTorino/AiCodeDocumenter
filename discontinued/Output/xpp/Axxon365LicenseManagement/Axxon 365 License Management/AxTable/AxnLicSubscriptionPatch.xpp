@@ -1,0 +1,11 @@
+﻿public class AxnLicSubscriptionPatch extends common
+{
+    public static AxnLicSubscriptionPatch find(boolean _forUpdate = false)
+    {
+        AxnLicSubscriptionPatch subscriptionStaging;
+        subscriptionStaging.selectForUpdate(_forUpdate);
+        select firstonly subscriptionStaging;
+
+        return subscriptionStaging;
+    }
+}

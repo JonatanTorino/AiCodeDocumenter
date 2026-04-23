@@ -1,0 +1,15 @@
+﻿public class AxnLicSubscriptionVerification extends common
+{
+    public static AxnLicSubscriptionVerification find(RefTableId _tableId, RefRecId _recId, boolean _forUpdate = false)
+    {
+        AxnLicSubscriptionVerification verification;
+
+        select firstonly verification
+            where verification.RefTableId == _tableId
+                && verification.RefRecId == _recId;
+
+        verification.selectForUpdate(_forUpdate);
+
+        return verification;
+    }
+}

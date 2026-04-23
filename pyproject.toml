@@ -1,0 +1,15 @@
+[project]
+name = "aicodedocumenter"
+version = "0.0.0"
+description = "Automated technical documentation flow for D365 F&O X++ codebases. Scripts under plugins/document-xpp/ require Python 3.10+."
+requires-python = ">=3.10"
+dependencies = [
+    # PyYAML is the only non-stdlib dep. Introduced in M2 because Fase 3
+    # (`build_class_diagrams.py`) must READ the funcionalidades YAMLs and
+    # manifest.yaml emitted in earlier phases. The `build_xpp_inventory.py`
+    # script from M1 remains stdlib-only — that constraint still holds for it.
+    "PyYAML>=6.0",
+]
+
+[tool.aicodedocumenter]
+python-scripts-root = "plugins/document-xpp/skills/document-xpp/scripts"

@@ -1,0 +1,20 @@
+﻿public class AxnLicParameters extends common
+{
+    public static AxnLicParameters find(boolean _forupdate = false)
+    {
+        AxnLicParameters parameter;
+
+        parameter.selectForUpdate(_forupdate);
+
+        select firstonly parameter
+            index KeyIdx
+            where parameter.Key == 0;
+
+        if (!parameter && !parameter.isTmp())
+        {
+            Company::createParameter(parameter);
+        }
+
+        return parameter;
+    }
+}

@@ -1,0 +1,98 @@
+﻿/// <summary>
+/// Servicio interno para descubrir y registrar las features activas
+/// a partir del registro centralizado de features.
+/// </summary>
+internal final class AxnLicComponentDiscoveryService
+{
+    public void run()
+    {
+        try
+        {
+            this.discoverExtensions();
+            this.discoverExtensionFeatures();
+            AxnLicSubscriptionSync::syncAll();
+            info("@AxnLicenseManagement:ComponentDiscoverySuccesful");
+        }
+        catch (Exception::Error)
+        {
+            throw error("@AxnLicenseManagement:ErrorFeature");
+        }
+    }
+
+    private void discoverExtensions()
+    {
+        Set registeredExtensions = AxnLicExtensionRegistry::getInstance().getExtensions();
+        if (!registeredExtensions || registeredExtensions.empty())
+        {
+            return;
+        }
+        this.saveSubscriptionExtensions(registeredExtensions);
+    }
+
+    private void saveSubscriptionExtensions(Set _extensions)
+    {
+        SetEnumerator enumerator = _extensions.getEnumerator();
+        ttsbegin;
+        while (enumerator.moveNext())
+        {
+            AxnLicExtensionContract extensionContract = enumerator.current() as AxnLicExtensionContract;
+            if (!extensionContract)
+            {
+                continue;
+            }
+            str extensionId   = extensionContract.parmExtensionId();
+            str moduleName = extensionContract.parmAOSModuleName();
+
+            // Inicializa o busca el registro existente
+            AxnLicSubscriptionExtension extension = AxnLicSubscriptionExtension::findByExtensionId(extensionId, true);
+            extension.AOSModuleName = moduleName;
+            extension.ExtensionId = extensionId;
+            extension.ExtensionName = extension ? extension.ExtensionName : extensionId;
+            extension.LicenseStatus = extension.LicenseStatus == AxnLicExtensionStatus::Active ? extension.LicenseStatus : AxnLicExtensionStatus::Installed;
+            extension.write();
+        }
+        ttscommit;
+    }
+
+    private void discoverExtensionFeatures()
+    {
+        Set registeredFeatures = AxnLicFeatureRegistry::getInstance().getFeatures();
+        if (!registeredFeatures || registeredFeatures.empty())
+        {
+            return;
+        }
+
+        this.saveSubscriptionExtensionFeatures(registeredFeatures);
+    }
+
+    private void saveSubscriptionExtensionFeatures(Set _features)
+    {
+        SetEnumerator enumerator = _features.getEnumerator();
+
+        ttsbegin;
+
+        while (enumerator.moveNext())
+        {
+            AxnLicFeatureContract featureContract = enumerator.current() as AxnLicFeatureContract;
+            if (!featureContract)
+            {
+                continue;
+            }
+
+            str featureId   = featureContract.parmFeatureId();
+            str featureName = featureContract.parmName();
+            str extensionId = featureContract.parmExtensionId();
+
+            // Inicializa o busca el registro existente
+            AxnLicSubscriptionExtensionFeature feature = AxnLicSubscriptionExtensionFeature::findByFeatureId(extensionId, featureId, true);
+
+            feature.FeatureId   = featureId;
+            feature.FeatureName = featureName;
+            feature.ExtensionId = extensionId;
+
+            feature.write();
+        }
+
+        ttscommit;
+    }
+}
