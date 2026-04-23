@@ -1,7 +1,7 @@
 # M0.2 — Decisión final
 
 > **Fecha:** 2026-04-20
-> **Decisor:** Jonatan Torino (jtorino@axxonconsulting.com)
+> **Decisor:** Jonatan Torino (jonatan.torino@hotmail.com)
 
 ---
 
