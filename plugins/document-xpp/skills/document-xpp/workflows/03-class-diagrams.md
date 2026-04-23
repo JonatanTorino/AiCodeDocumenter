@@ -139,7 +139,7 @@ Imprimí:
 - Cantidad de diagramas conservados (modo incremental).
 - Warnings agregados (verbos nuevos fuera del catálogo + nodos omitidos).
 - Ruta del `functional_map.md` actualizado.
-- Próxima fase: **05 — Diagramas de componentes C4** (`workflows/05-component-diagrams.md`).
+- Próxima fase: **04 — Diagramas de secuencia** (`workflows/04-sequence-diagrams.md`), o directamente **05 — Diagramas de componentes C4** (`workflows/05-component-diagrams.md`) si no necesitás secuencias.
 
 ---
 

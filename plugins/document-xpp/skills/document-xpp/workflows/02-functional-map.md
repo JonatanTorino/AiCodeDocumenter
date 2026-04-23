@@ -168,7 +168,7 @@ Imprimí al usuario:
 
 - Ruta del `functional_map.md`.
 - Cantidad de funcionalidades persistidas + su status.
-- Próxima fase: **03 — Diagramas de clases (M2, no disponible todavía)**.
+- Próxima fase: **03 — Diagramas de clases** (`workflows/03-class-diagrams.md`).
 
 ---
 

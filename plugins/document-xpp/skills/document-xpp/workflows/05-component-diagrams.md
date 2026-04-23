@@ -122,7 +122,7 @@ Imprimí:
 - Grupos conservados sin regenerar (modo incremental).
 - Warnings agregados.
 - Ruta de `functional_map.md` si lo actualizaste.
-- Próxima fase: **04 — Diagramas de secuencia (M4, no disponible todavía)**.
+- Próxima fase: **04 — Diagramas de secuencia** (`workflows/04-sequence-diagrams.md`) si todavía no los generaste.
 
 ---
 
