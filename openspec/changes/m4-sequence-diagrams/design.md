@@ -77,9 +77,9 @@ mode: discover | generate
 funcionalidad_yaml_path: "<abs-path>/_tracking/funcionalidades/<slug>.yaml"
 xpp_root: "<abs-path>/XppSource/"
 workspace_path: "<abs-path>/"
-template_path: "<plugin-root>/templates/sequence-diagram.puml.tpl"
-prompt_path: "<plugin-root>/prompts/04-sequence-diagram.md"
-visual_conventions_path: "<plugin-root>/references/visual-conventions.md"
+template_path: "<plugin-root>/skills/document-xpp/templates/sequence-diagram.puml.tpl"
+prompt_path: "<plugin-root>/skills/document-xpp/prompts/04-sequence-diagram.md"
+visual_conventions_path: "<plugin-root>/skills/document-xpp/references/visual-conventions.md"
 # Solo en mode=generate:
 flow_name: "Crear Suscripción"
 entry_point: "AxnLicSubscriptionController"

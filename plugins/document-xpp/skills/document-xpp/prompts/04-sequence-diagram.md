@@ -19,10 +19,12 @@
 
 ### Paso 3 — Identificar entry points
 
-Un entry point es un método que inicia un flujo de negocio observable por el usuario final. Criterios:
+Un entry point es un **método** que inicia un flujo de negocio observable por el usuario final. Criterios:
 - Método en una clase con `role: controller` o `role: service`.
 - Nombre del método sugiere acción de negocio: `run()`, `create*()`, `update*()`, `validate*()`, `apply*()`, `process*()`, `sync*()`, `check*()`.
 - NO son entry points: `parm*()`, `get*()`, `set*()`, constructores `new()`, métodos privados sin lógica de negocio visible.
+
+Si una clase tiene múltiples métodos candidatos, identificalos como candidatos independientes — cada método es un flujo separado.
 
 ### Paso 4 — Construir candidatos
 
@@ -30,6 +32,7 @@ Para cada entry point identificado:
 1. Nombrá el flujo en términos de negocio (no el nombre del método). Ej: método `createSubscription()` → flujo `"Crear Suscripción"`.
 2. Trazá los participantes directamente invocados desde ese entry point (sin recursión profunda — sólo el nivel inmediato de llamadas inter-clase).
 3. Descartá el candidato si tiene < 2 participantes detectables.
+4. El campo `entry_point` en el JSON de respuesta debe ser `"NombreClase.nombreMetodo"` (p.ej. `"AxnLicSubscriptionController.run"`), no sólo la clase.
 
 ### Paso 5 — Armar el JSON de respuesta (discover)
 
@@ -78,7 +81,7 @@ Seguí las llamadas desde `entry_point` a través de las clases participantes:
    - Omitir: `parm*()`, getters/setters triviales, `new()` sin lógica.
    - Incluir: `validate()`, `run()`, `post()`, `calc()`, `update()`, `insert()`, `find()`, cualquier cross-layer call.
 
-4. **Participantes externos:** si el código invoca una clase no en `inventory.csv`, agregala como `<<External>>` fuera de los boxes. No expandas su implementación — sólo la llamada de entrada.
+4. **Participantes externos:** si el código invoca una clase no presente en `<workspace_path>/_tracking/inventory.csv`, agregala como `<<External>>` fuera de los boxes. No expandas su implementación — sólo la llamada de entrada.
 
 ### Paso 4 — Rellenar el template
 

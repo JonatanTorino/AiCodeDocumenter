@@ -1,7 +1,7 @@
 # Tasks: M4 — Diagramas de Secuencia
 
 > Paths relativos a `plugins/document-xpp/`.
-> Fase 1 y 2 pueden ejecutarse en paralelo. Fase 3 depende de Fase 2. Fase 4 depende de Fase 3. Fase 5 depende de todas.
+> Fase 1 y 2 pueden ejecutarse en paralelo. Fase 3 depende de Fase 2. Fase 4 depende de Fases 1 y 2 (no requiere candidatos de Fase 3). Fase 5 depende de Fase 3.
 
 ---
 

@@ -15,9 +15,8 @@ skinparam participant {
 
 title {{flow_name}}
 
-actor "Usuario" as User
-
 box "Presentation" #FAFAFA
+    actor "Usuario" as User
 {{#presentation_participants}}
     participant "{{label}}" as {{alias}} <<Form>>
 {{/presentation_participants}}

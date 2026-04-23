@@ -30,7 +30,7 @@ Sos un arquitecto de soluciones D365 F&O especializado en **modelado de comporta
 | `prompt_path` | ambos | Path a `prompts/04-sequence-diagram.md` |
 | `visual_conventions_path` | ambos | Path a `references/visual-conventions.md` |
 | `flow_name` | generate | Nombre del flujo elegido por el usuario (p.ej. `"Crear Suscripción"`) |
-| `entry_point` | generate | Clase X++ que inicia el flujo (p.ej. `"AxnLicSubscriptionController"`) |
+| `entry_point` | generate | Método entry point exacto, en formato `Clase.metodo` (p.ej. `"AxnLicSubscriptionController.run"`) |
 | `puml_output_path` | generate | Path absoluto del `.puml` a escribir |
 
 ## Archivos que leés
@@ -63,7 +63,7 @@ Devolvé **sólo** un bloque JSON dentro de ` ```json ... ``` `, nada más.
   "candidates": [
     {
       "name": "Crear Suscripción",
-      "entry_point": "AxnLicSubscriptionController",
+      "entry_point": "AxnLicSubscriptionController.run",
       "participants": [
         "AxnLicSubscriptionController",
         "AxnLicSubscriptionService",
@@ -72,7 +72,7 @@ Devolvé **sólo** un bloque JSON dentro de ` ```json ... ``` `, nada más.
     },
     {
       "name": "Validar Licencia",
-      "entry_point": "AxnLicFeatureChecker",
+      "entry_point": "AxnLicFeatureChecker.checkFeature",
       "participants": [
         "AxnLicFeatureChecker",
         "AxnLicFeatureRegistry",

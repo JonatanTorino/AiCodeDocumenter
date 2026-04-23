@@ -345,7 +345,7 @@ Los participantes de Business Logic usan el estilo default de PlantUML (`#F9F9F9
 
 ### Reglas adicionales (obligatorias)
 
-- **`autonumber`** siempre, en la segunda línea después de `!theme plain`.
+- **`autonumber`** siempre, inmediatamente después de `!theme plain`.
 - **`activate` / `deactivate`** en los participantes principales (entry point + al menos un participante por capa).
 - **`title`** con el nombre del flujo de negocio (no el nombre técnico del método).
 - **`<<External>>`** para cualquier clase que no esté en `inventory.csv` del workspace — el flujo se representa pero no se expande su implementación.

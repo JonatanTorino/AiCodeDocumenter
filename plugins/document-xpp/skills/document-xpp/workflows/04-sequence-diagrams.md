@@ -14,7 +14,14 @@
    Fase 4 requiere funcionalidades documentadas. Corré primero las Fases 1 y 2.
    ```
    Detené el flujo.
-3. Leé `<workspace>/_tracking/manifest.yaml`. Extraé `sources.xpp_root` — lo usarás en todos los pasos siguientes. Si `xpp_root` está vacío o el directorio no existe, detené el flujo con mensaje claro.
+3. Leé cada YAML y evaluá su `status`. Si hay grupos con `status: desactualizado`, advertí al usuario con `AskUserQuestion`:
+   ```
+   Los siguientes grupos tienen cambios pendientes: <lista>
+   Podés continuar, pero los diagramas de secuencia reflejarán el código anterior al cambio.
+   ¿Continuás igual o preferís actualizar primero?
+   ```
+   Si elige actualizar, detené el flujo y recomendá correr Fases 2-3 primero.
+4. Leé `<workspace>/_tracking/manifest.yaml`. Extraé `sources.xpp_root` — lo usarás en todos los pasos siguientes. Si `xpp_root` está vacío o el directorio no existe, detené el flujo con mensaje claro.
 
 ---
 
@@ -102,7 +109,7 @@ Invocá el agente con `Agent` y `subagent_type: sequence-diagram-writer`. Pasale
 - `prompt_path`: `<plugin-root>/skills/document-xpp/prompts/04-sequence-diagram.md`
 - `visual_conventions_path`: `<plugin-root>/skills/document-xpp/references/visual-conventions.md`
 - `flow_name`: nombre del flujo
-- `entry_point`: clase entry point del flujo
+- `entry_point`: método entry point en formato `Clase.metodo` (p.ej. `"AxnLicSubscriptionController.run"`)
 - `puml_output_path`: `<workspace>/diagrams/sequences/<slug>-<flow-slug>.puml`
 
 ### 5c — Validación humana
@@ -139,6 +146,7 @@ artifacts:
 - Si ya existe, **agregá** la nueva entrada sin eliminar las anteriores.
 - Verificá que no queden entradas duplicadas (mismo `name` y `file`).
 - Actualizá `last_updated` a la fecha/hora actual (ISO-8601 UTC).
+- Si `status` era `nueva` o `desactualizado`, actualizalo a `actualizado`.
 
 ---
 
