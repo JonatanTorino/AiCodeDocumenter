@@ -23,7 +23,7 @@ El skill maestro te invoca con un prompt que incluye:
 - `workspace_path` — para que leas los CSV directamente.
 - `mode` — `nuevo` / `actualizar` / `agregar-independiente` / `agregar-relacionado`.
 - `product_name` — nombre del módulo o producto (ej: "License", "Subscription").
-- `existing_functionalities` — lista de funcionalidades ya registradas (slug + name + description), si las hay.
+- `existing_functionalities` — lista de funcionalidades ya registradas (slug + name + description + status), si las hay. En modo `actualizar`, el orquestador también incluye la lista explícita de `stale_slugs` (slugs con `status: desactualizado`) para que sepas cuáles realinear.
 - `scope_docs` — paths a documentos de alcance aportados por el usuario.
 - `manuals` — paths a manuales de usuario aportados.
 - `exclusion_list_path` — path a `references/exclusion-list.md` del plugin.
@@ -32,7 +32,7 @@ El skill maestro te invoca con un prompt que incluye:
 
 | Archivo | Qué sacás de ahí |
 |---------|------------------|
-| `<workspace_path>/_tracking/inventory.csv` | Lista de clases con `file, class, parent, interfaces, methods_count, prefix` |
+| `<workspace_path>/_tracking/inventory.csv` | Lista de clases con `file, class, parent, interfaces, methods_count, prefix` — **sólo en modos `nuevo` y `actualizar`; en `agregar-*` usás la lista pre-filtrada del prompt** |
 | `<workspace_path>/_tracking/dependencies.csv` | Relaciones `from_class, to_class, kind` (kind ∈ extends/implements/uses/calls) |
 | `<exclusion_list_path>` | Clases del framework a ignorar |
 | `<scope_docs[*]>` | Opcional — ayudan a nombrar los grupos |
@@ -61,7 +61,7 @@ El modo determina qué clasificás y qué devolvés:
 | `agregar-independiente` | Sólo las clases huérfanas pre-filtradas que te pasó el workflow | Grupos nuevos para esas clases únicamente; no tocás ni re-proponés los grupos existentes |
 | `agregar-relacionado` | Las clases huérfanas pre-filtradas + analizás sus dependencias con grupos existentes | Grupos nuevos con campo `related_to[]` indicando con qué grupos existentes se vinculan |
 
-**Regla crítica en `agregar-*`:** el inventario que recibís ya está pre-filtrado — sólo contiene clases huérfanas. No proponés grupos para clases que no estén en ese inventario. Los grupos existentes son contexto de referencia, no objeto de re-clasificación.
+**Regla crítica en `agregar-*`:** en estos modos NO leas `inventory.csv` — el orquestador te pasó en el prompt la lista exacta de clases huérfanas que tenés que clasificar. Usá esa lista como tu inventario de trabajo. `dependencies.csv` sí lo leés normalmente para calcular refs. Los grupos existentes son contexto de referencia, no objeto de re-clasificación.
 
 **`related_to[]` en `agregar-relacionado`:** si el grupo nuevo tiene dependencias (vía `dependencies.csv`) hacia clases de un grupo existente, listá el slug de ese grupo en `related_to`. Si no hay vínculos, omitís el campo o lo dejás vacío.
 
@@ -74,21 +74,21 @@ Devolvé **sólo** un bloque JSON dentro de ``` ```json ... ``` ``` (sin prosa a
 ```json
 {
   "product": "License",
-  "mode": "nuevo",
+  "mode": "agregar-relacionado",
   "groups": [
     {
-      "slug": "subscription",
-      "name": "Gestión de Suscripciones",
-      "description": "Ciclo de vida de las suscripciones: creación, renovación, cancelación, cambio de plan.",
-      "patterns": ["AxnLicSubscription"],
-      "related_to": ["billing"],
+      "slug": "billing",
+      "name": "Facturación",
+      "description": "Generación y envío de facturas a clientes.",
+      "patterns": ["AxnLicBilling"],
+      "related_to": ["subscription"],
       "classes": [
         {
-          "file": "AxnLicSubscription/AxnLicSubscriptionService.xpp",
-          "class": "AxnLicSubscriptionService",
+          "file": "AxnLicBilling/AxnLicBillingService.xpp",
+          "class": "AxnLicBillingService",
           "role": "service",
-          "internal_refs": ["AxnLicSubscription", "AxnLicSubscriptionTable"],
-          "external_refs": ["custTable", "salesLine"]
+          "internal_refs": ["AxnLicBillingTable"],
+          "external_refs": ["custTable"]
         }
       ]
     }

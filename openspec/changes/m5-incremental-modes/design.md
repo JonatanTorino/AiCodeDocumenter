@@ -2,7 +2,7 @@
 
 ## Technical Approach
 
-4 cambios quirúrgicos en `workflows/02-functional-map.md` + 1 en `agents/functional-classifier.md`. Sin archivos nuevos; todos los cambios son adiciones o reemplazos de secciones existentes.
+4 cambios quirúrgicos en `workflows/02-functional-map.md` + 1 en `agents/functional-classifier.md`. Sin archivos nuevos en el plugin (workflows/agents/scripts); los archivos bajo `openspec/` son artefactos SDD, no entregables del plugin.
 
 ## Architecture Decisions
 
