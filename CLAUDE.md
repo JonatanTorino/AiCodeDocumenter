@@ -18,8 +18,8 @@ El repo **es** el marketplace local desde el cual se instala el plugin. No es un
 - **M1.5 mergeado** (merge commit `4955ac0`, 2026-04-21). Docs de contexto + `visual-conventions.md` + `.validation/` reclasificado como ephemeral.
 - **M2 mergeado** en `master` (merge commit `e9b452d`, 2026-04-22). Diagramas de clases MVP: `build_class_diagrams.py` determinista + agente `uml-diagram-writer` + catálogo de verbos abierto-curado + manifest DBML.
 - **M3 mergeado** en `master` (merge commit `405cbc5`, 2026-04-22). Diagramas de componentes C4: agente `c4-component-writer` (L1 conceptual + L2 detallado), workflow 05, prompts 05, templates PlantUML C4, referencia `c4-plantuml-usage.md`. Rename `diagram-writer` → `uml-diagram-writer` incluido.
-- **M4 en desarrollo** — diagramas de secuencia. Implementa Fase 4: agente `sequence-diagram-writer` (modo discover + generate), workflow 04, prompt 04, template de secuencia, convenciones de secuencia en `visual-conventions.md`.
-- **M5** pendiente. Plan completo de milestones: `analiza-todo-el-contenido-lucky-metcalfe.md`.
+- **M4 mergeado** en `master` (2026-04-22). Diagramas de secuencia: agente `sequence-diagram-writer` (discover + generate), workflow 04, prompt 04, template `.puml.tpl`, convenciones en `visual-conventions.md`.
+- **M5 en desarrollo** — modos incrementales. Completa soporte de `actualizar`, `agregar-independiente` y `agregar-relacionado` en workflow 02 y agente `functional-classifier`. 4 gaps: cleanup de eliminados, pre-filtrado de inventory, cross-refs en `agregar-relacionado`, merge selectivo de `functional_map.md`.
 
 ## Dónde está cada cosa
 
