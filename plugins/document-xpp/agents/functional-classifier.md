@@ -23,7 +23,7 @@ El skill maestro te invoca con un prompt que incluye:
 - `workspace_path` — para que leas los CSV directamente.
 - `mode` — `nuevo` / `actualizar` / `agregar-independiente` / `agregar-relacionado`.
 - `product_name` — nombre del módulo o producto (ej: "License", "Subscription").
-- `existing_functionalities` — lista de funcionalidades ya registradas (slug + name + description), si las hay.
+- `existing_functionalities` — lista de funcionalidades ya registradas (slug + name + description + status), si las hay. En modo `actualizar`, el orquestador también incluye la lista explícita de `stale_slugs` (slugs con `status: desactualizado`) para que sepas cuáles realinear.
 - `scope_docs` — paths a documentos de alcance aportados por el usuario.
 - `manuals` — paths a manuales de usuario aportados.
 - `exclusion_list_path` — path a `references/exclusion-list.md` del plugin.
@@ -32,7 +32,7 @@ El skill maestro te invoca con un prompt que incluye:
 
 | Archivo | Qué sacás de ahí |
 |---------|------------------|
-| `<workspace_path>/_tracking/inventory.csv` | Lista de clases con `file, class, parent, interfaces, methods_count, prefix` |
+| `<workspace_path>/_tracking/inventory.csv` | Lista de clases con `file, class, parent, interfaces, methods_count, prefix` — **sólo en modos `nuevo` y `actualizar`; en `agregar-*` usás la lista pre-filtrada del prompt** |
 | `<workspace_path>/_tracking/dependencies.csv` | Relaciones `from_class, to_class, kind` (kind ∈ extends/implements/uses/calls) |
 | `<exclusion_list_path>` | Clases del framework a ignorar |
 | `<scope_docs[*]>` | Opcional — ayudan a nombrar los grupos |
@@ -50,9 +50,20 @@ Leé `prompts/01-identify-functional-groups.md` y aplicalo. Salida intermedia: l
 
 Leé `prompts/02-classify-classes.md` y aplicalo sobre los candidatos del Paso 1 + el inventario. Asigná cada clase (no excluida) a un grupo, con su `role` inferido. Calculá referencias internas y externas usando `dependencies.csv`.
 
-### Paso 3 — Modo `actualizar` / `agregar-*`
+### Paso 3 — Comportamiento por modo
 
-Si hay `existing_functionalities`, alineá tu propuesta con los nombres y slugs que ya existen **cuando la clase ya estaba clasificada**. Sólo proponé grupos nuevos para clases verdaderamente nuevas o cuando el dominio claramente se partió.
+El modo determina qué clasificás y qué devolvés:
+
+| Modo | Qué clasificás | Qué devolvés |
+|------|----------------|--------------|
+| `nuevo` | Todo el inventario desde cero | Grupos nuevos para todas las clases |
+| `actualizar` | Sólo los grupos con `status: desactualizado` — realinealos con el inventario actualizado | Ajustes a grupos existentes; NO proponés grupos nuevos salvo que haya clases sin asignar |
+| `agregar-independiente` | Sólo las clases huérfanas pre-filtradas que te pasó el workflow | Grupos nuevos para esas clases únicamente; no tocás ni re-proponés los grupos existentes |
+| `agregar-relacionado` | Las clases huérfanas pre-filtradas + analizás sus dependencias con grupos existentes | Grupos nuevos con campo `related_to[]` indicando con qué grupos existentes se vinculan |
+
+**Regla crítica en `agregar-*`:** en estos modos NO leas `inventory.csv` — el orquestador te pasó en el prompt la lista exacta de clases huérfanas que tenés que clasificar. Usá esa lista como tu inventario de trabajo. `dependencies.csv` sí lo leés normalmente para calcular refs. Los grupos existentes son contexto de referencia, no objeto de re-clasificación.
+
+**`related_to[]` en `agregar-relacionado`:** si el grupo nuevo tiene dependencias (vía `dependencies.csv`) hacia clases de un grupo existente, listá el slug de ese grupo en `related_to`. Si no hay vínculos, omitís el campo o lo dejás vacío.
 
 ---
 
@@ -63,20 +74,21 @@ Devolvé **sólo** un bloque JSON dentro de ``` ```json ... ``` ``` (sin prosa a
 ```json
 {
   "product": "License",
-  "mode": "nuevo",
+  "mode": "agregar-relacionado",
   "groups": [
     {
-      "slug": "subscription",
-      "name": "Gestión de Suscripciones",
-      "description": "Ciclo de vida de las suscripciones: creación, renovación, cancelación, cambio de plan.",
-      "patterns": ["AxnLicSubscription"],
+      "slug": "billing",
+      "name": "Facturación",
+      "description": "Generación y envío de facturas a clientes.",
+      "patterns": ["AxnLicBilling"],
+      "related_to": ["subscription"],
       "classes": [
         {
-          "file": "AxnLicSubscription/AxnLicSubscriptionService.xpp",
-          "class": "AxnLicSubscriptionService",
+          "file": "AxnLicBilling/AxnLicBillingService.xpp",
+          "class": "AxnLicBillingService",
           "role": "service",
-          "internal_refs": ["AxnLicSubscription", "AxnLicSubscriptionTable"],
-          "external_refs": ["custTable", "salesLine"]
+          "internal_refs": ["AxnLicBillingTable"],
+          "external_refs": ["custTable"]
         }
       ]
     }
@@ -100,6 +112,7 @@ Devolvé **sólo** un bloque JSON dentro de ``` ```json ... ``` ``` (sin prosa a
 - **`role`** — uno de: `service` (clases con "Service" en el nombre o con lógica orquestadora), `entity` (hereda de `Common` o tiene "Table"/"Entity" en el nombre), `controller` (hereda de `SysOperationController`/`RunBase` con intención de UI), `dto` (data carriers sin lógica), `helper` (utilidades sin estado), `other` (cuando no encaja).
 - **`internal_refs`** — tomado de `dependencies.csv` donde `from_class = class` y `to_class` existe en `inventory.csv`.
 - **`external_refs`** — tomado de `dependencies.csv` donde `to_class` NO existe en el inventario **y** NO está en la `exclusion-list.md`.
+- **`related_to`** — (opcional, sólo en modo `agregar-relacionado`) slugs de grupos existentes con los que el nuevo grupo tiene dependencias directas. Omitilo en los demás modos.
 - **`unclassified`** — clases que no encajaron; el humano decidirá.
 - **`warnings`** — cualquier cosa que el humano debería mirar antes de validar (ambigüedades, duplicados, huérfanos).
 
