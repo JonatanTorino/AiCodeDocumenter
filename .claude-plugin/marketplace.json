@@ -2,8 +2,8 @@
   "name": "aicodedocumenter-local",
   "description": "Marketplace local del repo AiCodeDocumenter. Expone el plugin document-xpp para automatizar la documentación técnica de soluciones Dynamics 365 F&O en X++.",
   "owner": {
-    "name": "Axxon Consulting",
-    "email": "jtorino@axxonconsulting.com"
+    "name": "Jonatan Torino",
+    "email": "jonatan.torino@hotmail.com"
   },
   "plugins": [
     {

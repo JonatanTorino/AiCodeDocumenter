@@ -2,7 +2,7 @@
   "extraKnownMarketplaces": {
     "melodic-software": {
       "source": {
-        "type": "github",
+        "source": "github",
         "repo": "melodic-software/claude-code-plugins"
       }
     }
