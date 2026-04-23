@@ -50,9 +50,20 @@ Leé `prompts/01-identify-functional-groups.md` y aplicalo. Salida intermedia: l
 
 Leé `prompts/02-classify-classes.md` y aplicalo sobre los candidatos del Paso 1 + el inventario. Asigná cada clase (no excluida) a un grupo, con su `role` inferido. Calculá referencias internas y externas usando `dependencies.csv`.
 
-### Paso 3 — Modo `actualizar` / `agregar-*`
+### Paso 3 — Comportamiento por modo
 
-Si hay `existing_functionalities`, alineá tu propuesta con los nombres y slugs que ya existen **cuando la clase ya estaba clasificada**. Sólo proponé grupos nuevos para clases verdaderamente nuevas o cuando el dominio claramente se partió.
+El modo determina qué clasificás y qué devolvés:
+
+| Modo | Qué clasificás | Qué devolvés |
+|------|----------------|--------------|
+| `nuevo` | Todo el inventario desde cero | Grupos nuevos para todas las clases |
+| `actualizar` | Sólo los grupos con `status: desactualizado` — realinealos con el inventario actualizado | Ajustes a grupos existentes; NO proponés grupos nuevos salvo que haya clases sin asignar |
+| `agregar-independiente` | Sólo las clases huérfanas pre-filtradas que te pasó el workflow | Grupos nuevos para esas clases únicamente; no tocás ni re-proponés los grupos existentes |
+| `agregar-relacionado` | Las clases huérfanas pre-filtradas + analizás sus dependencias con grupos existentes | Grupos nuevos con campo `related_to[]` indicando con qué grupos existentes se vinculan |
+
+**Regla crítica en `agregar-*`:** el inventario que recibís ya está pre-filtrado — sólo contiene clases huérfanas. No proponés grupos para clases que no estén en ese inventario. Los grupos existentes son contexto de referencia, no objeto de re-clasificación.
+
+**`related_to[]` en `agregar-relacionado`:** si el grupo nuevo tiene dependencias (vía `dependencies.csv`) hacia clases de un grupo existente, listá el slug de ese grupo en `related_to`. Si no hay vínculos, omitís el campo o lo dejás vacío.
 
 ---
 
@@ -70,6 +81,7 @@ Devolvé **sólo** un bloque JSON dentro de ``` ```json ... ``` ``` (sin prosa a
       "name": "Gestión de Suscripciones",
       "description": "Ciclo de vida de las suscripciones: creación, renovación, cancelación, cambio de plan.",
       "patterns": ["AxnLicSubscription"],
+      "related_to": ["billing"],
       "classes": [
         {
           "file": "AxnLicSubscription/AxnLicSubscriptionService.xpp",
@@ -100,6 +112,7 @@ Devolvé **sólo** un bloque JSON dentro de ``` ```json ... ``` ``` (sin prosa a
 - **`role`** — uno de: `service` (clases con "Service" en el nombre o con lógica orquestadora), `entity` (hereda de `Common` o tiene "Table"/"Entity" en el nombre), `controller` (hereda de `SysOperationController`/`RunBase` con intención de UI), `dto` (data carriers sin lógica), `helper` (utilidades sin estado), `other` (cuando no encaja).
 - **`internal_refs`** — tomado de `dependencies.csv` donde `from_class = class` y `to_class` existe en `inventory.csv`.
 - **`external_refs`** — tomado de `dependencies.csv` donde `to_class` NO existe en el inventario **y** NO está en la `exclusion-list.md`.
+- **`related_to`** — (opcional, sólo en modo `agregar-relacionado`) slugs de grupos existentes con los que el nuevo grupo tiene dependencias directas. Omitilo en los demás modos.
 - **`unclassified`** — clases que no encajaron; el humano decidirá.
 - **`warnings`** — cualquier cosa que el humano debería mirar antes de validar (ambigüedades, duplicados, huérfanos).
 
