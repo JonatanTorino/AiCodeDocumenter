@@ -297,3 +297,62 @@ Si durante M2+ surge la necesidad de:
 - Un **cambio de color** → PR con captura antes/después y justificación (accesibilidad, contraste, daltonismo).
 
 **No driftear** en diagramas individuales: si el agente detecta necesidad de algo no documentado, lo escala como `warnings[]` en el output JSON del contrato del classifier / uml-diagram-writer.
+
+---
+
+## Sequence Diagrams (M4+)
+
+Convenciones para los diagramas UML de secuencia generados por el agente `sequence-diagram-writer`. Aplican desde M4.
+
+### Estructura en 3 capas (obligatoria)
+
+Todo diagrama de secuencia organiza los participantes en 3 boxes PlantUML:
+
+| Box | Contiene | Ejemplos X++ |
+|---|---|---|
+| `"Presentation"` | Forms, actor usuario, menús | `AxnLicSubscriptionApply (Form)`, `actor "Usuario"` |
+| `"Business Logic"` | Services, Controllers, Managers, Helpers activos | `AxnLicSubscriptionService`, `AxnLicSubscriptionController` |
+| `"Data"` | Tables, Queries | `AxnLicSubscription`, `AxnLicSubscriptionState` |
+
+Los participantes **externos** (clases fuera del `inventory.csv`) se declaran fuera de los boxes como `<<External>>`.
+
+### Paleta por capa (obligatoria)
+
+```plantuml
+skinparam participant {
+    BackgroundColor<<Form>>     #F3E5F5
+    BorderColor<<Form>>         #7B1FA2
+    BackgroundColor<<Table>>    #E8F5E9
+    BorderColor<<Table>>        #2E7D32
+    BackgroundColor<<External>> #ECEFF1
+    BorderColor<<External>>     #B0BEC5
+}
+```
+
+Los participantes de Business Logic usan el estilo default de PlantUML (`#F9F9F9` / `#333333`); no requieren stereotype explícito.
+
+### Reglas de ruido (obligatorias)
+
+**NO incluir en el diagrama:**
+- Getters/setters (`parm*()`, `get*()`, `set*()` triviales sin lógica de negocio).
+- Constructores `new()` que sólo asignan campos.
+- Validaciones internas sin salida observable (p.ej. `checkNotEmpty()` sobre un campo local).
+
+**SÍ incluir:**
+- `validate()`, `run()`, `post()`, `calc()`, `update()`, `insert()`, `find()` cuando participan en el flujo.
+- Cualquier llamada que cruce una capa (Presentation → Business Logic, Business Logic → Data).
+- Retornos relevantes que cambien el flujo del caller.
+
+### Reglas adicionales (obligatorias)
+
+- **`autonumber`** siempre, inmediatamente después de `!theme plain`.
+- **`activate` / `deactivate`** en los participantes principales (entry point + al menos un participante por capa).
+- **`title`** con el nombre del flujo de negocio (no el nombre técnico del método).
+- **`<<External>>`** para cualquier clase que no esté en `inventory.csv` del workspace — el flujo se representa pero no se expande su implementación.
+- **`skinparam responseMessageBelowArrow true`** — los mensajes de retorno aparecen debajo de la flecha.
+
+### Nombramiento de archivos de salida
+
+- Path: `<workspace>/diagrams/sequences/<slug>-<flow-slug>.puml`
+- `flow-slug`: nombre del flujo en kebab-case ASCII, sin tildes (`ó→o`, `ú→u`, `ñ→n`), espacios → `-`.
+- Ejemplo: flujo `"Crear Suscripción"` en grupo `subscription` → `subscription-crear-suscripcion.puml`.

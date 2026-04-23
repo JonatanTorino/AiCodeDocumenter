@@ -17,8 +17,9 @@ El repo **es** el marketplace local desde el cual se instala el plugin. No es un
 - **M1 mergeado** en `master` (merge commit `f6a2db7`, 2026-04-21). Cubre Fase 1 (bootstrap) y Fase 2 (mapa funcional) end-to-end en modo `nuevo`.
 - **M1.5 mergeado** (merge commit `4955ac0`, 2026-04-21). Docs de contexto + `visual-conventions.md` + `.validation/` reclasificado como ephemeral.
 - **M2 mergeado** en `master` (merge commit `e9b452d`, 2026-04-22). Diagramas de clases MVP: `build_class_diagrams.py` determinista + agente `uml-diagram-writer` + catálogo de verbos abierto-curado + manifest DBML.
-- **M3 en revisión** — diagramas de componentes C4. Implementa Fase 5 end-to-end: agente `c4-component-writer` (L1 conceptual + L2 detallado), workflow 05, prompts 05, templates PlantUML C4, referencia `c4-plantuml-usage.md`. Rename `diagram-writer` → `uml-diagram-writer` incluido. PR abierto, pendiente de merge.
-- **M4, M5** pendientes. Plan completo de milestones: `analiza-todo-el-contenido-lucky-metcalfe.md`.
+- **M3 mergeado** en `master` (merge commit `405cbc5`, 2026-04-22). Diagramas de componentes C4: agente `c4-component-writer` (L1 conceptual + L2 detallado), workflow 05, prompts 05, templates PlantUML C4, referencia `c4-plantuml-usage.md`. Rename `diagram-writer` → `uml-diagram-writer` incluido.
+- **M4 en desarrollo** — diagramas de secuencia. Implementa Fase 4: agente `sequence-diagram-writer` (modo discover + generate), workflow 04, prompt 04, template de secuencia, convenciones de secuencia en `visual-conventions.md`.
+- **M5** pendiente. Plan completo de milestones: `analiza-todo-el-contenido-lucky-metcalfe.md`.
 
 ## Dónde está cada cosa
 
@@ -38,6 +39,7 @@ El repo **es** el marketplace local desde el cual se instala el plugin. No es un
 | Fase 1 (bootstrap) | `plugins/document-xpp/skills/document-xpp/workflows/01-bootstrap.md` |
 | Fase 2 (mapa funcional) | `workflows/02-functional-map.md` + `agents/functional-classifier.md` + `prompts/01-*.md` + `prompts/02-*.md` |
 | Fase 3 (diagramas de clases) | `workflows/03-class-diagrams.md` + `agents/uml-diagram-writer.md` + `prompts/03-class-diagram.md` + `templates/class-diagram.puml.tpl` |
+| Fase 4 (diagramas de secuencia) | `workflows/04-sequence-diagrams.md` + `agents/sequence-diagram-writer.md` + `prompts/04-sequence-diagram.md` + `templates/sequence-diagram.puml.tpl` |
 | Fase 5 (diagramas de componentes C4) | `workflows/05-component-diagrams.md` + `agents/c4-component-writer.md` + `prompts/05-component-conceptual.md` + `prompts/05-component-detailed.md` + `references/c4-plantuml-usage.md` + `templates/component-diagram-l1.puml.tpl` + `templates/component-diagram-l2.puml.tpl` |
 | Candidatos deterministas Fase 3 | `scripts/build_class_diagrams.py` (Python ≥ 3.10, requiere **PyYAML ≥ 6.0**; emite `_tracking/diagram_candidates/<slug>.yaml` por grupo) |
 | Parser X++ / AxEnum / AxEdt | `scripts/build_xpp_inventory.py` (Python ≥ 3.10, stdlib-only; docstring documenta limitaciones conocidas — AxEnum/AxEdt dormant hasta que upstream los extraiga) |
